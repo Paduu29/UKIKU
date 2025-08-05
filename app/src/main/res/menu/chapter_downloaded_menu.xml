@@ -21,5 +21,6 @@
         android:visible="false"/>
     <item
         android:id="@+id/commentaries"
-        android:title="COMENTARIOS"/>
+        android:title="COMENTARIOS"
+        android:visible="false" />
 </menu>

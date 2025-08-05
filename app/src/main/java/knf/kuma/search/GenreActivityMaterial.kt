@@ -42,8 +42,8 @@ class GenreActivityMaterial : GenericActivity() {
                 CacheDB.INSTANCE.animeDAO().getAllGenre("%" + intent.getStringExtra("name") + "%").asPagingSourceFactory()
             ).flow.collectLatest {
                 adapter.submitData(it)
+                binding.progress.visibility = View.GONE
                 if (isFirst) {
-                    binding.progress.visibility = View.GONE
                     isFirst = false
                     binding.recycler.scheduleLayoutAnimation()
                 }

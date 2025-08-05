@@ -14,7 +14,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import knf.kuma.R
-import knf.kuma.commons.*
+import knf.kuma.commons.BypassUtil
+import knf.kuma.commons.EAHelper
+import knf.kuma.commons.Network
+import knf.kuma.commons.PrefsUtil
+import knf.kuma.commons.SSLSkipper
+import knf.kuma.commons.doOnUIGlobal
+import knf.kuma.commons.execute
+import knf.kuma.commons.isFullMode
+import knf.kuma.commons.jsoupCookiesDir
+import knf.kuma.commons.noCrash
+import knf.kuma.commons.okHttpCookies
 import knf.kuma.database.CacheDB
 import knf.kuma.database.dao.AnimeDAO
 import knf.kuma.download.FileAccessHelper
@@ -75,7 +85,7 @@ class DirectoryService : IntentService("Directory update") {
         needCookies = BypassUtil.isCloudflareActive(BypassUtil.testLink)
         isRunning = true
         setStatus(STATE_VERIFYING)
-        manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val animeDAO = CacheDB.INSTANCE.animeDAO()
         count = animeDAO.count
         SSLSkipper.skip()
@@ -95,9 +105,13 @@ class DirectoryService : IntentService("Directory update") {
         noCrash {
             val main = jsoupCookiesDir("https://www3.animeflv.net/browse", needCookies).get()
             val lastPage = main.select("ul.pagination li:matches(\\d+)").last().text().trim().toInt()
-            val last = jsoupCookiesDir("https://www3.animeflv.net/browse?page=$lastPage", needCookies).get()
-            maxAnimes = ((24 * (lastPage - 1)) + last.select("article").size) - 1
-            Log.e(TAG, "Max pages = $maxAnimes")
+            val last = try {
+                jsoupCookiesDir("https://www3.animeflv.net/browse?page=$lastPage", needCookies).get().select("article").size
+            } catch (e: Exception) {
+                0
+            }
+            maxAnimes = ((24 * (lastPage - 1)) + last) - 1
+            Log.e(TAG, "Max animes = $maxAnimes")
         }
     }
 
@@ -333,7 +347,7 @@ class DirectoryService : IntentService("Directory update") {
         }
 
         fun setStatus(status: Int) {
-            doOnUIGlobal { liveStatus.setValue(status) }
+            doOnUIGlobal { liveStatus.value = status }
         }
 
         fun getLiveStatus(): LiveData<Int> {

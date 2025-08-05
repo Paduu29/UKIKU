@@ -6,6 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.annotation.DrawableRes
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
@@ -13,11 +16,15 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.snackbar.Snackbar
 import knf.kuma.BottomFragment
 import knf.kuma.R
-import knf.kuma.commons.*
+import knf.kuma.commons.Network
+import knf.kuma.commons.PrefsUtil
+import knf.kuma.commons.isFullMode
+import knf.kuma.commons.noCrash
+import knf.kuma.commons.showSnackbar
+import knf.kuma.commons.verifyManager
 import knf.kuma.recommended.RankType
 import knf.kuma.recommended.RecommendHelper
 import knf.kuma.retrofit.Repository
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.find
 
@@ -110,6 +117,12 @@ class SearchFragment : BottomFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+            fab.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                bottomMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom * 2
+            }
+            WindowInsetsCompat.CONSUMED
+        }
         recyclerView.verifyManager()
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

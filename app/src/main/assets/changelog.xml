@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release code="221" version="5.3.11">
+        <change type="fix">Corrección servidor StreamWish</change>
+    </release>
     <release code="220" version="5.3.10">
-        <change type="fix">Corrección de imagenes en recientes</change>
+        <change type="fix">Corrección de imágenes en recientes</change>
         <change type="change">Soporte Android 16</change>
     </release>
     <release code="219" version="5.3.9">

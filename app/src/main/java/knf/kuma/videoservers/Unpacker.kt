@@ -22,6 +22,15 @@ object Unpacker {
     fun unpack(link: String): String {
         val html = Jsoup.connect(link).ignoreContentType(true).execute().body()
         val packedCode = packedRegex2.find(html)?.destructured?.component1()
+        if (packedCode == null) return html
+        val jsBridge = JsBridge(JsBridgeConfig.bareConfig(), safeContext)
+        return jsBridge.evaluateBlocking("function prnt() {var txt = $packedCode; return txt;}prnt();")
+    }
+
+    suspend fun unpackWeb(context: Context, link: String): String {
+        val html = getHtml(context, link) ?: return ""
+        val packedCode = packedRegex2.find(html)?.destructured?.component1()
+        if (packedCode == null) return html
         val jsBridge = JsBridge(JsBridgeConfig.bareConfig(), safeContext)
         return jsBridge.evaluateBlocking("function prnt() {var txt = $packedCode; return txt;}prnt();")
     }
@@ -38,8 +47,8 @@ object Unpacker {
     }
 
     suspend fun getHtml(context: Context, link: String, delay: Long = 5000): String? {
-        val evaluator = WebJS(context)
         return withContext(Dispatchers.Main) {
+            val evaluator = WebJS(context)
             suspendCoroutine { continuation ->
                 evaluator.evalOnFinish(
                     link,

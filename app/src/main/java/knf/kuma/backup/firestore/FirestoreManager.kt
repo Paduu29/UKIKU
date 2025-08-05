@@ -508,7 +508,7 @@ object FirestoreManager {
             val providers = arrayListOf(
                     AuthUI.IdpConfig.EmailBuilder().build(),
                     AuthUI.IdpConfig.GoogleBuilder().build(),
-                    AuthUI.IdpConfig.TwitterBuilder().build()
+                //AuthUI.IdpConfig.TwitterBuilder().build()
             )
             /*if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(activity) != ConnectionResult.SUCCESS) {
                 providers.removeAt(1)
@@ -517,6 +517,7 @@ object FirestoreManager {
                     AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
+                        .setTheme(R.style.AppTheme_FirebaseUI)
                         .setLogo(R.drawable.ic_launcher_login)
                         .setIsSmartLockEnabled(false)
                             .build()

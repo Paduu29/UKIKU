@@ -3,6 +3,7 @@ package knf.kuma.videoservers
 import android.content.Context
 import knf.kuma.commons.PatternUtil
 import knf.kuma.videoservers.VideoServer.Names.STREAMWISH
+import kotlinx.coroutines.runBlocking
 
 class StreamWishServer internal constructor(context: Context, baseLink: String) : Server(context, baseLink) {
 
@@ -22,8 +23,8 @@ class StreamWishServer internal constructor(context: Context, baseLink: String) 
         get() {
             return try {
                 val downLink = PatternUtil.extractLink(baseLink)
-                val unpack = Unpacker.unpack(downLink)
-                val option = "(?:hls\\d\"|file): ?\"(http[^\"]+)".toRegex().findAll(unpack).first()
+                val unpack = runBlocking { Unpacker.unpackWeb(context, downLink) }
+                val option = "(?:hls\\d\"|file): ?\"(http[^\"]+m3u8[^\"]*)".toRegex().findAll(unpack).first()
                 val (link) = option.destructured
                 VideoServer(name, Option(name, "HLS", link))
             } catch (e: Exception) {

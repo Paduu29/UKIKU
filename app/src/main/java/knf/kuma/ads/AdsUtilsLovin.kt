@@ -64,7 +64,6 @@ fun MutableList<RecentObject>.implAdsRecentLovin() {
                     adIndex = 1
                     AdsUtilsMob.RECENT_BANNER
                 }
-
                 else -> {
                     adIndex = 0
                     AdsUtilsMob.RECENT_BANNER

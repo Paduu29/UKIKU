@@ -13,11 +13,24 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.preference.PreferenceManager
 import androidx.tvprovider.media.tv.PreviewChannelHelper
-import androidx.work.*
+import androidx.work.CoroutineWorker
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ForegroundInfo
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
 import knf.kuma.App
 import knf.kuma.BuildConfig
 import knf.kuma.R
-import knf.kuma.commons.*
+import knf.kuma.commons.DesignUtils
+import knf.kuma.commons.Network
+import knf.kuma.commons.PatternUtil
+import knf.kuma.commons.PicassoSingle
+import knf.kuma.commons.PrefsUtil
+import knf.kuma.commons.create
+import knf.kuma.commons.isFullMode
+import knf.kuma.commons.jsoupCookies
 import knf.kuma.database.CacheDB
 import knf.kuma.download.DownloadDialogActivity
 import knf.kuma.download.FileAccessHelper
@@ -215,7 +228,7 @@ class RecentsWork(val context: Context, workerParameters: WorkerParameters) :
 
     private fun getBitmap(recentObject: RecentObject): Bitmap? {
         return try {
-            if (PrefsUtil.showRecentImage) PicassoSingle.get().load(recentObject.img).get() else null
+            if (PrefsUtil.showRecentImage) PicassoSingle.get().load(PatternUtil.getCover(recentObject.aid)).get() else null
         } catch (e: Exception) {
             null
         }
