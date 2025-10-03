@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release code="223" version="5.3.13">
+        <change type="fix">Error al descargar en algunos dispositivos</change>
+    </release>
     <release code="222" version="5.3.12">
         <change type="fix">Corrección de imágenes</change>
         <change type="fix">Error al obtener lista de recientes en algunos casos</change>

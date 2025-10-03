@@ -30,7 +30,6 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
@@ -304,30 +303,34 @@ fun Int.toColor(): Int {
 }
 
 fun ImageView.load(link: String?, callback: Callback? = null) {
-    Glide.with(this).load(GlideUrl(link, BypassUtil.getLazyHeaders()))
-        .diskCacheStrategy(DiskCacheStrategy.ALL)
-        .listener(object : RequestListener<Drawable> {
-            override fun onLoadFailed(
-                e: GlideException?,
-                model: Any?,
-                target: Target<Drawable?>,
-                isFirstResource: Boolean
-            ): Boolean {
-                callback?.onError(e)
-                return false
-            }
+    try {
+        Glide.with(this).load(GlideUrl(link, BypassUtil.getLazyHeaders()))
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable?>,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    callback?.onError(e)
+                    return false
+                }
 
-            override fun onResourceReady(
-                resource: Drawable,
-                model: Any,
-                target: Target<Drawable?>?,
-                dataSource: DataSource,
-                isFirstResource: Boolean
-            ): Boolean {
-                callback?.onSuccess()
-                return false
-            }
-        }).into(this)
+                override fun onResourceReady(
+                    resource: Drawable,
+                    model: Any,
+                    target: Target<Drawable?>?,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    callback?.onSuccess()
+                    return false
+                }
+            }).into(this)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
 }
 
 fun ImageView.loadGlide(link: String) {
@@ -733,8 +736,6 @@ fun popUpMenu(
         hideItems().forEach {
             getMenu().findItem(it).isVisible = false
         }
-        if (getMenu() is MenuBuilder)
-            (getMenu() as MenuBuilder).optionalIconsVisible = showIcons
     }.show()
 }
 
