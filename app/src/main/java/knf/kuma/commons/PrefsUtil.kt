@@ -15,7 +15,7 @@ import knf.kuma.player.VideoActivity
 import knf.kuma.uagen.randomUA
 import knh.kuma.commons.cloudflarebypass.util.ConvertUtil
 import java.net.HttpCookie
-import java.util.*
+import java.util.UUID
 
 @SuppressLint("StaticFieldLeak")
 object PrefsUtil {
@@ -51,6 +51,10 @@ object PrefsUtil {
     var isDirectoryFinished: Boolean
         get() = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("directory_finished", false)
         set(value) = PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("directory_finished", value).apply()
+
+    var isFetchDBReset: Boolean
+        get() = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("fetch_db_reset", false)
+        set(value) = PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("fetch_db_reset", value).apply()
 
     val isAdsEnabled: Boolean
         get() = (!isSubscriptionEnabled && AdsUtils.remoteConfigs.getBoolean("ads_forced")) ||

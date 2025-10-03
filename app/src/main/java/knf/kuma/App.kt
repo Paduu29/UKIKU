@@ -89,7 +89,10 @@ class App : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         context = this
-        deleteDatabase("LibGlobalFetchLib.db")
+        if (!PrefsUtil.isFetchDBReset) {
+            PrefsUtil.isFetchDBReset = true
+            deleteDatabase("LibGlobalFetchLib.db")
+        }
         AppCompatDelegate.setDefaultNightMode(PrefsUtil.themeOption.toInt())
         AllSSLOkHttpClient.enableTLS()
         BackUpWork.checkInit()
