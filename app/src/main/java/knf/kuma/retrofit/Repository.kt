@@ -1,19 +1,17 @@
 package knf.kuma.retrofit
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import knf.kuma.App
-import knf.kuma.commons.BypassUtil
 import knf.kuma.commons.Network
-import knf.kuma.commons.NoSSLOkHttpClient
 import knf.kuma.commons.PatternUtil
 import knf.kuma.commons.PrefsUtil
 import knf.kuma.commons.doOnUIGlobal
+import knf.kuma.commons.jsoupCookies
+import knf.kuma.commons.jsoupCookiesAdapter
 import knf.kuma.database.CacheDB
 import knf.kuma.directory.DirObject
 import knf.kuma.directory.DirObjectCompact
@@ -28,14 +26,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.doAsync
-import pl.droidsonroids.retrofit2.JspoonConverterFactory
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import pl.droidsonroids.jspoon.Jspoon
 import java.util.Locale
-import java.util.concurrent.Executors
 import javax.inject.Singleton
 
 @Singleton
@@ -46,96 +38,48 @@ class Repository {
 
     fun reloadAllRecents() {
         reloadRecents()
-        reloadRecentModels()
+        reloadRecentsAlt()
     }
 
     fun reloadRecents() {
         if (Network.isConnected) {
-            var tryCount = 0
-            val callback = object : Callback<Recents> {
-                override fun onResponse(call: Call<Recents>, response: Response<Recents>) {
-                    GlobalScope.launch(Dispatchers.IO) {
-                        try {
-                            if (response.isSuccessful) {
-                                val objects = RecentObject.create(response.body()?.list ?: listOf())
-                                for ((i, recentObject) in objects.withIndex()) {
-                                    recentObject.key = i
-                                    recentObject.fileWrapper()
-                                }
-                                CacheDB.INSTANCE.recentsDAO().setCache(objects)
-                            } else
-                                onFailure(call, Exception("HTTP " + response.code()))
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            onFailure(call, e)
-                        }
+            GlobalScope.launch(Dispatchers.IO) {
+                try {
+                    val recents = Jspoon.create().adapter(Recents::class.java).fromHtml(jsoupCookies("https://www3.animeflv.net/").get().outerHtml())
+                    val objects = RecentObject.create(recents.list)
+                    for ((i, recentObject) in objects.withIndex()) {
+                        recentObject.key = i
+                        recentObject.fileWrapper()
                     }
-                }
-
-                override fun onFailure(call: Call<Recents>, t: Throwable) {
-                    t.printStackTrace()
-                    if (tryCount < 3 && PrefsUtil.alwaysGenerateUA) {
-                        tryCount++
-                        getFactoryBack("https://www3.animeflv.net/").getRecents(
-                            BypassUtil.getStringCookie(
-                                App.context
-                            ), BypassUtil.userAgent, "https://www3.animeflv.net"
-                        ).enqueue(this)
-                    }
+                    CacheDB.INSTANCE.recentsDAO().setCache(objects)
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
-            getFactoryBack("https://www3.animeflv.net/").getRecents(
-                BypassUtil.getStringCookie(App.context),
-                BypassUtil.userAgent,
-                "https://www3.animeflv.net"
-            ).enqueue(callback)
         }
     }
 
-    fun reloadRecentModels() {
+    fun reloadRecentsAlt() {
         if (Network.isConnected) {
-            var tryCount = 0
-            val callback = object : Callback<RecentsPage> {
-                override fun onResponse(call: Call<RecentsPage>, response: Response<RecentsPage>) {
-                    try {
-                        if (response.isSuccessful) {
-                            val list = response.body()?.list?.apply {
-                                forEachIndexed { index, model ->
-                                    model.key = index
-                                }
-                            } ?: emptyList()
-                            CacheDB.INSTANCE.recentModelsDAO().setCache(list)
-                        } else
-                            onFailure(call, Exception("HTTP " + response.code()))
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        onFailure(call, e)
+            GlobalScope.launch(Dispatchers.IO) {
+                try {
+                    val page = Jspoon.create().adapter(RecentsPage::class.java).fromHtml(jsoupCookies("https://www3.animeflv.net/").get().outerHtml())
+                    val list = page.list.apply {
+                        forEachIndexed { index, model ->
+                            model.key = index
+                        }
                     }
-
-                }
-
-                override fun onFailure(call: Call<RecentsPage>, t: Throwable) {
-                    t.printStackTrace()
-                    if (tryCount < 3 && PrefsUtil.alwaysGenerateUA) {
-                        tryCount++
-                        getFactoryBack("https://www3.animeflv.net/").getRecentModels(
-                            BypassUtil.getStringCookie(
-                                App.context
-                            ), BypassUtil.userAgent, "https://www3.animeflv.net"
-                        ).enqueue(this)
+                    GlobalScope.launch(Dispatchers.IO) {
+                        CacheDB.INSTANCE.recentModelsDAO().setCache(list)
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
-            getFactoryBack("https://www3.animeflv.net/").getRecentModels(
-                BypassUtil.getStringCookie(App.context),
-                BypassUtil.userAgent,
-                "https://www3.animeflv.net"
-            ).enqueue(callback)
         }
     }
 
     fun getAnime(
-        context: Context,
         link: String,
         persist: Boolean,
         data: MutableLiveData<AnimeObject?> = MutableLiveData<AnimeObject?>()
@@ -143,8 +87,6 @@ class Repository {
         doAsync {
             var cacheUsed = false
             try {
-                val base = link.substring(0, link.lastIndexOf("/") + 1)
-                val rest = link.substring(link.lastIndexOf("/") + 1)
                 val dao = CacheDB.INSTANCE.animeDAO()
                 val dbLink = "%/${link.substringAfterLast("/")}"
                 dao.getAnimeRaw(dbLink)?.let {
@@ -154,48 +96,10 @@ class Repository {
                     }
                 }
                 if (Network.isConnected) {
-                    var tryCount = 0
-                    val callback = object : Callback<AnimeObject.WebInfo> {
-                        override fun onResponse(
-                            call: Call<AnimeObject.WebInfo>,
-                            response: Response<AnimeObject.WebInfo>
-                        ) {
-                            try {
-                                if (response.body() == null || response.code() != 200) {
-                                    onFailure(call, Exception("HTTP " + response.code()))
-                                } else
-                                    doAsync {
-                                        val animeObject = AnimeObject(link, response.body())
-                                        if (persist)
-                                            dao.insert(animeObject)
-                                        doOnUIGlobal { data.value = animeObject }
-                                    }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                onFailure(call, e)
-                            }
-                        }
-
-                        override fun onFailure(call: Call<AnimeObject.WebInfo>, t: Throwable) {
-                            t.printStackTrace()
-                            if (tryCount < 3 && PrefsUtil.alwaysGenerateUA) {
-                                tryCount++
-                                getFactory(base).getAnime(
-                                    BypassUtil.getStringCookie(context),
-                                    BypassUtil.userAgent,
-                                    "https://www3.animeflv.net",
-                                    rest
-                                ).enqueue(this)
-                            } else
-                                if (!cacheUsed) data.value = null
-                        }
-                    }
-                    getFactory(base).getAnime(
-                        BypassUtil.getStringCookie(context),
-                        BypassUtil.userAgent,
-                        "https://www3.animeflv.net",
-                        rest
-                    ).enqueue(callback)
+                    val animeObject = AnimeObject(link, jsoupCookiesAdapter(link, AnimeObject.WebInfo::class.java))
+                    if (persist)
+                        dao.insert(animeObject)
+                    doOnUIGlobal { data.value = animeObject }
                 } else if (!cacheUsed)
                     doOnUIGlobal { data.value = null }
             } catch (e: Exception) {
@@ -318,34 +222,10 @@ class Repository {
             config = PagingConfig(24),
             pagingSourceFactory = {
                 SearchCompactDataSource(
-                    getFactory("https://www3.animeflv.net"),
                     query,
                     onInit
                 )
             }
         ).flow
-    }
-
-    companion object {
-        fun getFactory(link: String): Factory {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(link)
-                .client(NoSSLOkHttpClient.get())
-                .addConverterFactory(JspoonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
-            return retrofit.create(Factory::class.java)
-        }
-    }
-
-    private fun getFactoryBack(link: String): Factory {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(link)
-            .client(NoSSLOkHttpClient.get())
-            .addConverterFactory(JspoonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .callbackExecutor(Executors.newSingleThreadExecutor())
-            .build()
-        return retrofit.create(Factory::class.java)
     }
 }

@@ -2,14 +2,14 @@ package knf.kuma.search
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import knf.kuma.App
-import knf.kuma.commons.BypassUtil
+import knf.kuma.commons.jsoupCookiesAdapter
 import knf.kuma.directory.DirObjectCompact
+import knf.kuma.directory.DirectoryPageCompact
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.net.URLEncoder
 
 class SearchCompactDataSource(
-    val factory: knf.kuma.retrofit.Factory,
     val query: String,
     val onInit: (isEmpty: Boolean) -> Unit
 ) : PagingSource<Int, DirObjectCompact>() {
@@ -20,28 +20,17 @@ class SearchCompactDataSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, DirObjectCompact> {
         val page = params.key ?: 1
         try {
-            val response = withContext(Dispatchers.IO) {
-                factory.getSearch(
-                    BypassUtil.getStringCookie(App.context),
-                    BypassUtil.userAgent,
-                    query,
-                    page
-                ).execute()
+            val dir = withContext(Dispatchers.IO) {
+                jsoupCookiesAdapter("https://www3.animeflv.net/browse?order=title&q=${URLEncoder.encode(query, "utf-8")}&page=$page", DirectoryPageCompact::class.java)
             }
-            if (response.isSuccessful) {
-                response.body()?.let {
-                    if (page == 1)
-                        onInit(it.list.isEmpty())
-                    return LoadResult.Page(it.list, null, if (it.hasNext) page + 1 else null)
-                }
-            }
+            if (page == 1)
+                onInit(dir.list.isEmpty())
+            return LoadResult.Page(dir.list, null, if (dir.hasNext) page + 1 else null)
+        }catch (e:Exception){
+            e.printStackTrace()
             if (page == 1)
                 onInit(true)
             return LoadResult.Page(emptyList(), null, null)
-        }catch (e:Exception){
-            if (page == 1)
-                onInit(true)
-            return LoadResult.Error(e)
         }
     }
 }

@@ -20,13 +20,13 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.bumptech.glide.Glide
 import knf.kuma.App
 import knf.kuma.BuildConfig
 import knf.kuma.R
 import knf.kuma.commons.DesignUtils
 import knf.kuma.commons.Network
 import knf.kuma.commons.PatternUtil
-import knf.kuma.commons.PicassoSingle
 import knf.kuma.commons.PrefsUtil
 import knf.kuma.commons.create
 import knf.kuma.commons.isFullMode
@@ -228,7 +228,7 @@ class RecentsWork(val context: Context, workerParameters: WorkerParameters) :
 
     private fun getBitmap(recentObject: RecentObject): Bitmap? {
         return try {
-            if (PrefsUtil.showRecentImage) PicassoSingle.get().load(PatternUtil.getCover(recentObject.aid)).get() else null
+            if (PrefsUtil.showRecentImage) Glide.with(context).asBitmap().load(PatternUtil.getCover(recentObject.aid)).submit().get() else null
         } catch (e: Exception) {
             null
         }

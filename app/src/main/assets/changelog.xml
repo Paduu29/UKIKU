@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release code="222" version="5.3.12">
+        <change type="fix">Corrección de imágenes</change>
+        <change type="fix">Error al obtener lista de recientes en algunos casos</change>
+    </release>
     <release code="221" version="5.3.11">
         <change type="fix">Corrección servidor StreamWish</change>
     </release>

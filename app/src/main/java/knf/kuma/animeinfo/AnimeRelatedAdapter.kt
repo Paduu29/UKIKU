@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import knf.kuma.R
 import knf.kuma.commons.PatternUtil
-import knf.kuma.commons.PicassoSingle
+import knf.kuma.commons.load
 import knf.kuma.databinding.ItemRelatedBinding
 import knf.kuma.pojos.AnimeObject
 
@@ -26,7 +26,7 @@ internal class AnimeRelatedAdapter(private val fragment: Fragment, private val l
         holder.relation.text = related.relation
         if (related.aid != "null") {
             holder.imageView.visibility = View.VISIBLE
-            PicassoSingle.get().load(PatternUtil.getCover(related.aid)).into(holder.imageView)
+            holder.imageView.load(PatternUtil.getCover(related.aid))
             holder.cardView.setOnClickListener { ActivityAnime.open(fragment, related, holder.imageView) }
         } else {
             holder.imageView.visibility = View.GONE

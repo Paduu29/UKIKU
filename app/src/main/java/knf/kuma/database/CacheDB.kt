@@ -7,9 +7,34 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import knf.kuma.App
-import knf.kuma.database.dao.*
+import knf.kuma.database.dao.AchievementsDAO
+import knf.kuma.database.dao.AnimeDAO
+import knf.kuma.database.dao.ChaptersDAO
+import knf.kuma.database.dao.DownloadsDAO
+import knf.kuma.database.dao.ExplorerDAO
+import knf.kuma.database.dao.FavsDAO
+import knf.kuma.database.dao.GenresDAO
+import knf.kuma.database.dao.NotificationDAO
+import knf.kuma.database.dao.PlayerStateDAO
+import knf.kuma.database.dao.QueueDAO
+import knf.kuma.database.dao.RecentModelsDAO
+import knf.kuma.database.dao.RecentsDAO
+import knf.kuma.database.dao.RecordsDAO
+import knf.kuma.database.dao.SeeingDAO
+import knf.kuma.database.dao.SeenDAO
 import knf.kuma.player.PlayerState
-import knf.kuma.pojos.*
+import knf.kuma.pojos.Achievement
+import knf.kuma.pojos.AnimeObject
+import knf.kuma.pojos.DownloadObject
+import knf.kuma.pojos.ExplorerObject
+import knf.kuma.pojos.FavoriteObject
+import knf.kuma.pojos.GenreStatusObject
+import knf.kuma.pojos.NotificationObj
+import knf.kuma.pojos.QueueObject
+import knf.kuma.pojos.RecentObject
+import knf.kuma.pojos.RecordObject
+import knf.kuma.pojos.SeeingObject
+import knf.kuma.pojos.SeenObject
 import knf.kuma.recents.RecentModel
 
 @Database(entities = [RecentObject::class, RecentModel::class, PlayerState::class, AnimeObject::class, FavoriteObject::class, AnimeObject.WebInfo.AnimeChapter::class, SeenObject::class, NotificationObj::class, DownloadObject::class, RecordObject::class, SeeingObject::class, ExplorerObject::class, GenreStatusObject::class, QueueObject::class, Achievement::class],
@@ -77,6 +102,11 @@ abstract class CacheDB : RoomDatabase() {
                 database.execSQL("ALTER TABLE `downloadobject`  ADD COLUMN `did` TEXT")
                 database.execSQL("ALTER TABLE `downloadobject`  ADD COLUMN `eta` TEXT")
                 database.execSQL("ALTER TABLE `downloadobject`  ADD COLUMN `speed` TEXT")
+            }
+        }
+        private val MIGRATION_8_7: Migration = object : Migration(8, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+
             }
         }
         private val MIGRATION_7_8: Migration = object : Migration(7, 8) {
@@ -200,7 +230,28 @@ abstract class CacheDB : RoomDatabase() {
 
         private fun init(context: Context): CacheDB =
                 Room.databaseBuilder(context, CacheDB::class.java, "cache-db")
-                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20).build()
+                    .addMigrations(
+                        MIGRATION_1_2,
+                        MIGRATION_2_3,
+                        MIGRATION_3_4,
+                        MIGRATION_4_5,
+                        MIGRATION_5_6,
+                        MIGRATION_6_7,
+                        MIGRATION_7_8,
+                        MIGRATION_8_7,
+                        MIGRATION_8_9,
+                        MIGRATION_9_10,
+                        MIGRATION_10_11,
+                        MIGRATION_11_12,
+                        MIGRATION_12_13,
+                        MIGRATION_13_14,
+                        MIGRATION_14_15,
+                        MIGRATION_15_16,
+                        MIGRATION_16_17,
+                        MIGRATION_17_18,
+                        MIGRATION_18_19,
+                        MIGRATION_19_20
+                    ).build()
 
         fun createAndGet(context: Context): CacheDB {
             return Room.databaseBuilder(context, CacheDB::class.java, "cache-db")

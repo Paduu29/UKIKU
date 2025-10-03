@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import com.afollestad.materialdialogs.MaterialDialog
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -16,9 +17,8 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
 import knf.kuma.App
 import knf.kuma.BuildConfig
 import knf.kuma.R
@@ -519,8 +519,8 @@ object FirestoreManager {
                         .setAvailableProviders(providers)
                         .setTheme(R.style.AppTheme_FirebaseUI)
                         .setLogo(R.drawable.ic_launcher_login)
-                        .setIsSmartLockEnabled(false)
-                            .build()
+                        .setCredentialManagerEnabled(false)
+                        .build()
                     , 5548
             )
         }

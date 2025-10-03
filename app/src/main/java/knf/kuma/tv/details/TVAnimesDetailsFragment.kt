@@ -74,7 +74,7 @@ class TVAnimesDetailsFragment : DetailsSupportFragment(), OnItemViewClickedListe
     private fun buildDetails() {
         val activity = activity ?: return
         Repository().getAnime(
-            App.context, arguments?.getString("url")
+            arguments?.getString("url")
                 ?: "", true
         ).observe(activity) { animeObject ->
             if (animeObject != null) {

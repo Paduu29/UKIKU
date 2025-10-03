@@ -5,6 +5,7 @@ import android.webkit.CookieManager
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.preference.PreferenceManager
+import com.bumptech.glide.load.model.LazyHeaders
 import knf.kuma.App
 import knf.kuma.ads.AdsUtils
 import knf.kuma.uagen.UAGenerator
@@ -162,6 +163,20 @@ class BypassUtil {
             //getClearance(context).let { if (it != defaultValue) map[keyCfClearance] = it }
             //getCFDuid(context).let { if (it != defaultValue) map[keyCfDuid] = it }
             return map
+        }
+
+        fun getLazyHeaders(): LazyHeaders {
+            return LazyHeaders.Builder().apply {
+                addHeader("Cookie", getStringCookie(App.context))
+                addHeader("User-Agent", userAgent)
+            }.build()
+        }
+
+        fun getMapHeaders(): Map<String, String> {
+            return mapOf(
+                "Cookie" to getStringCookie(App.context),
+                "User-Agent" to userAgent
+            )
         }
 
         fun getStringCookie(context: Context): String {

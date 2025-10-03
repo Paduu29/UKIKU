@@ -13,29 +13,55 @@ import android.widget.TextView
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.card.MaterialCardView
 import knf.kuma.R
-import knf.kuma.ads.*
+import knf.kuma.ads.AdCallback
+import knf.kuma.ads.AdCardItemHolder
+import knf.kuma.ads.AdRecentObject
+import knf.kuma.ads.AdsUtilsMob
+import knf.kuma.ads.implAdsRecent
 import knf.kuma.animeinfo.ActivityAnime
 import knf.kuma.backup.firestore.syncData
 import knf.kuma.cast.CastMedia
-import knf.kuma.commons.*
+import knf.kuma.commons.CastUtil
+import knf.kuma.commons.FileWrapper
+import knf.kuma.commons.Network
+import knf.kuma.commons.PatternUtil
+import knf.kuma.commons.PrefsUtil
+import knf.kuma.commons.distinct
+import knf.kuma.commons.doOnUI
+import knf.kuma.commons.isFullMode
+import knf.kuma.commons.load
+import knf.kuma.commons.noCrash
+import knf.kuma.commons.noCrashLet
+import knf.kuma.commons.safeShow
 import knf.kuma.custom.SeenAnimeOverlay
 import knf.kuma.database.CacheDB
 import knf.kuma.download.DownloadManager
 import knf.kuma.download.FileAccessHelper
-import knf.kuma.pojos.*
+import knf.kuma.pojos.AnimeObject
+import knf.kuma.pojos.DownloadObject
+import knf.kuma.pojos.RecentObject
+import knf.kuma.pojos.RecordObject
+import knf.kuma.pojos.SeenObject
 import knf.kuma.queue.QueueManager
 import knf.kuma.videoservers.ServersFactory
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.find
 import xdroid.toaster.Toaster.toast
-import java.util.*
+import java.util.Locale
 
 class RecentsAdapter internal constructor(private val fragment: Fragment, private val view: View) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -68,7 +94,7 @@ class RecentsAdapter internal constructor(private val fragment: Fragment, privat
             if (holder is ItemHolder) {
                 holder.unsetObservers()
                 val recentObject = noCrashLet { list[position] } ?: return@noCrash
-                PicassoSingle.get().load(PatternUtil.getCover(recentObject.aid)).into(holder.imageView)
+                holder.imageView.load(PatternUtil.getCover(recentObject.aid))
                 holder.setNew(recentObject.isNew)
                 holder.setFav(recentObject.isFav)
                 holder.setSeen(recentObject.isSeen)

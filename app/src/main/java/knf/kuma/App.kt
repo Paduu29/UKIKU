@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.work.Configuration
 import es.munix.multidisplaycast.CastManager
 import knf.kuma.achievements.AchievementManager
+import knf.kuma.commons.AllSSLOkHttpClient
 import knf.kuma.commons.PrefsUtil
 import knf.kuma.directory.DirectoryService
 import knf.kuma.download.DownloadManager
@@ -28,7 +29,7 @@ class App : Application(), Configuration.Provider {
 
     @TargetApi(Build.VERSION_CODES.O)
     private fun createChannels() {
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+        val manager = getSystemService(NOTIFICATION_SERVICE) as? NotificationManager
         val dirChannel = NotificationChannel(
             DirectoryService.CHANNEL,
             getString(R.string.directory_channel_title),
@@ -89,6 +90,7 @@ class App : Application(), Configuration.Provider {
         super.onCreate()
         context = this
         AppCompatDelegate.setDefaultNightMode(PrefsUtil.themeOption.toInt())
+        AllSSLOkHttpClient.enableTLS()
         BackUpWork.checkInit()
         CastManager.register(this)
         AchievementManager.init(this)

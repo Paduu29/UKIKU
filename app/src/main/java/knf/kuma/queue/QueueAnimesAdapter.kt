@@ -11,9 +11,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import knf.kuma.R
 import knf.kuma.animeinfo.ActivityAnime
-import knf.kuma.commons.*
+import knf.kuma.commons.PatternUtil
+import knf.kuma.commons.PrefsUtil
+import knf.kuma.commons.bind
+import knf.kuma.commons.doOnUIGlobal
+import knf.kuma.commons.load
+import knf.kuma.commons.notSameContent
 import knf.kuma.pojos.QueueObject
-import java.util.*
+import java.util.Locale
 
 internal class QueueAnimesAdapter internal constructor(private val activity: Activity) : RecyclerView.Adapter<QueueAnimesAdapter.AnimeHolder>() {
     private var listener: OnAnimeSelectedListener? = null
@@ -37,7 +42,7 @@ internal class QueueAnimesAdapter internal constructor(private val activity: Act
     override fun onBindViewHolder(holder: AnimeHolder, position: Int) {
         val queueObject = list[position]
         val img = PatternUtil.getCover(queueObject.chapter.aid)
-        PicassoSingle.get().load(img).into(holder.imageView)
+        holder.imageView.load(img)
         holder.title.text = PatternUtil.fromHtml(queueObject.chapter.name)
         holder.type.text = String.format(Locale.getDefault(), if (queueObject.count == 1) "%d episodio" else "%d episodios", queueObject.count)
         holder.cardView.setOnClickListener { listener?.onSelect(queueObject) }

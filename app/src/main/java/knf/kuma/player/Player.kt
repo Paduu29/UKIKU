@@ -25,8 +25,8 @@ import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.reactivex.rxjava3.disposables.Disposable
+import knf.kuma.commons.AllSSLOkHttpClient
 import knf.kuma.commons.BypassUtil
-import knf.kuma.commons.NoSSLOkHttpClient
 import knf.kuma.commons.PrefsUtil
 import knf.kuma.commons.noCrashLetNullable
 import knf.kuma.database.CacheDB
@@ -96,7 +96,7 @@ class PlayerHolder(
         val item = MediaItem.fromUri(descriptor.mediaUri?: Uri.EMPTY)
         if (intent.getBooleanExtra("isFile", false)) return MediaData(item)
         val httpFactory = if (PrefsUtil.useExperimentalOkHttp)
-            OkHttpDataSource.Factory(NoSSLOkHttpClient.get()).apply {
+            OkHttpDataSource.Factory(AllSSLOkHttpClient.get()).apply {
                 descriptor.extras?.getStringArray("headers")?.let { headerArray ->
                     val headers = headerArray.toList().chunked(2).associate { Pair(it[0], it[1]) }
                     setDefaultRequestProperties(headers)

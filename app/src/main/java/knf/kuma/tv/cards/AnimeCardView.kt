@@ -5,7 +5,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import knf.kuma.R
 import knf.kuma.commons.PatternUtil
-import knf.kuma.commons.load
+import knf.kuma.commons.loadGlide
 import knf.kuma.tv.BindableCardView
 import knf.kuma.tv.search.BasicAnimeObject
 import org.jetbrains.anko.find
@@ -18,7 +18,7 @@ class AnimeCardView(context: Context) : BindableCardView<BasicAnimeObject>(conte
         get() = R.layout.item_tv_card
 
     override fun bind(data: BasicAnimeObject) {
-        imageView.load(PatternUtil.getCover(data.aid))
+        imageView.loadGlide(PatternUtil.getCover(data.aid))
         find<TextView>(R.id.title).text = data.name
     }
 }

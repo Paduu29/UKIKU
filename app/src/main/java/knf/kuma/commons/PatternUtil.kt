@@ -7,7 +7,6 @@ import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import knf.kuma.App
 import knf.kuma.pojos.AnimeObject
-import java.util.*
 import java.util.regex.Pattern
 
 
@@ -142,7 +141,7 @@ object PatternUtil {
     }
 
     fun getCover(aid: String?): String {
-        return "https://m.animeflv.net/uploads/animes/covers/$aid.jpg"
+        return "https://www3.animeflv.net/uploads/animes/covers/$aid.jpg"
     }
 
     fun getThumb(aid: String?): String {

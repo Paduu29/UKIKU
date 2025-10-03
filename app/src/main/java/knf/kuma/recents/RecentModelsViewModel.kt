@@ -19,6 +19,6 @@ class RecentModelsViewModel : ViewModel() {
     }*/
 
     fun reload() {
-        repository.reloadRecentModels()
+        repository.reloadRecentsAlt()
     }
 }

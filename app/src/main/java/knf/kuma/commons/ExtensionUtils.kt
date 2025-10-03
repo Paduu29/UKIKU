@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.AnimationDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -48,6 +49,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Callback
@@ -75,6 +83,7 @@ import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.nield.kotlinstatistics.WeightedDice
+import pl.droidsonroids.jspoon.Jspoon
 import xdroid.toaster.Toaster
 import java.io.File
 import java.net.URLDecoder
@@ -195,7 +204,7 @@ val canGroupNotifications: Boolean
 fun gridColumns(size: Int = 115): Int {
     val metrics = App.context.resources.displayMetrics
     val dpWidht = metrics.widthPixels / metrics.density
-    return (dpWidht / size).toInt()
+    return (dpWidht / size).toInt().coerceAtLeast(1)
 }
 
 fun View.showSnackbar(text: String, duration: Int = Snackbar.LENGTH_SHORT, animation: Int = Snackbar.ANIMATION_MODE_FADE): Snackbar {
@@ -295,11 +304,60 @@ fun Int.toColor(): Int {
 }
 
 fun ImageView.load(link: String?, callback: Callback? = null) {
-    PicassoSingle.get().load(link).into(this, callback)
+    Glide.with(this).load(GlideUrl(link, BypassUtil.getLazyHeaders()))
+        .diskCacheStrategy(DiskCacheStrategy.ALL)
+        .listener(object : RequestListener<Drawable> {
+            override fun onLoadFailed(
+                e: GlideException?,
+                model: Any?,
+                target: Target<Drawable?>,
+                isFirstResource: Boolean
+            ): Boolean {
+                callback?.onError(e)
+                return false
+            }
+
+            override fun onResourceReady(
+                resource: Drawable,
+                model: Any,
+                target: Target<Drawable?>?,
+                dataSource: DataSource,
+                isFirstResource: Boolean
+            ): Boolean {
+                callback?.onSuccess()
+                return false
+            }
+        }).into(this)
+}
+
+fun ImageView.loadGlide(link: String) {
+    Glide.with(safeContext).load(link).into(this)
 }
 
 fun ImageView.load(uri: Uri?, callback: Callback? = null) {
-    PicassoSingle.get().load(uri).into(this, callback)
+    Glide.with(this).load(uri)
+        .listener(object : RequestListener<Drawable> {
+            override fun onLoadFailed(
+                e: GlideException?,
+                model: Any?,
+                target: Target<Drawable?>,
+                isFirstResource: Boolean
+            ): Boolean {
+                callback?.onError(e)
+                return false
+            }
+
+            override fun onResourceReady(
+                resource: Drawable,
+                model: Any,
+                target: Target<Drawable?>?,
+                dataSource: DataSource,
+                isFirstResource: Boolean
+            ): Boolean {
+                callback?.onSuccess()
+                return false
+            }
+        }).into(this)
 }
 
 fun <T> retry(numOfRetries: Int, block: () -> T): T {
@@ -522,6 +580,16 @@ fun jsoupCookies(url: String?, followRedirects: Boolean = true): Connection =
                 .timeout(PrefsUtil.timeoutTime.toInt() * 1000)
                 .followRedirects(followRedirects)
 
+fun <T> jsoupCookiesAdapter(url: String?, adapter: Class<T>, followRedirects: Boolean = true): T =
+    Jspoon.create().adapter(adapter).fromHtml(
+        Jsoup.connect(url)
+            .cookies(BypassUtil.getMapCookie(App.context))
+            .userAgent(BypassUtil.userAgent)
+            .timeout(PrefsUtil.timeoutTime.toInt() * 1000)
+            .followRedirects(followRedirects)
+            .get().outerHtml()
+    )
+
 fun jsoupCookiesDir(url: String?, useCookies: Boolean): Connection =
         Jsoup.connect(url).apply {
             if (useCookies)
@@ -666,7 +734,7 @@ fun popUpMenu(
             getMenu().findItem(it).isVisible = false
         }
         if (getMenu() is MenuBuilder)
-            (getMenu() as MenuBuilder).setOptionalIconsVisible(showIcons)
+            (getMenu() as MenuBuilder).optionalIconsVisible = showIcons
     }.show()
 }
 

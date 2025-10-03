@@ -4,7 +4,6 @@ import android.content.Context
 import android.widget.ImageView
 import android.widget.TextView
 import knf.kuma.R
-import knf.kuma.commons.PicassoSingle
 import knf.kuma.tv.BindableCardView
 import knf.kuma.tv.sync.SyncObject
 import org.jetbrains.anko.find
@@ -18,7 +17,7 @@ class SyncCardView(context: Context) : BindableCardView<SyncObject>(context) {
         get() = find(R.id.img)
 
     override fun bind(data: SyncObject) {
-        PicassoSingle.get().load(data.image).into(imageView)
+        imageView.setImageResource(data.image)
         find<TextView>(R.id.title).text = data.title
     }
 }

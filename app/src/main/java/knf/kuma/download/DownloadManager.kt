@@ -14,13 +14,25 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.tonyodev.fetch2.*
+import com.tonyodev.fetch2.Download
+import com.tonyodev.fetch2.EnqueueAction
+import com.tonyodev.fetch2.Error
+import com.tonyodev.fetch2.Fetch
+import com.tonyodev.fetch2.FetchConfiguration
+import com.tonyodev.fetch2.FetchListener
+import com.tonyodev.fetch2.Request
+import com.tonyodev.fetch2.Status
 import com.tonyodev.fetch2core.DownloadBlock
 import com.tonyodev.fetch2core.Func
 import com.tonyodev.fetch2okhttp.OkHttpDownloader
 import knf.kuma.App
+import knf.kuma.BuildConfig
 import knf.kuma.R
-import knf.kuma.commons.*
+import knf.kuma.commons.AllSSLOkHttpClient
+import knf.kuma.commons.EAHelper
+import knf.kuma.commons.FileUtil
+import knf.kuma.commons.PrefsUtil
+import knf.kuma.commons.noCrash
 import knf.kuma.database.CacheDB
 import knf.kuma.pojos.DownloadObject
 import knf.kuma.videoservers.ServersFactory
@@ -30,7 +42,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.notificationManager
 import xdroid.toaster.Toaster
-import java.util.*
+import java.util.Locale
 
 class DownloadManager : Service() {
 
@@ -71,7 +83,7 @@ class DownloadManager : Service() {
                     .enableRetryOnNetworkGain(true)
                     .setAutoRetryMaxAttempts(3)
                     .createDownloadFileOnEnqueue(false)
-                    .setHttpDownloader(OkHttpDownloader(NoSSLOkHttpClient.get()))
+                .setHttpDownloader(OkHttpDownloader(AllSSLOkHttpClient.get()))
         }
         private val downloadDao = CacheDB.INSTANCE.downloadsDAO()
         private val notificationManager: NotificationManager by lazy { context.notificationManager }

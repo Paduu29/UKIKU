@@ -569,7 +569,7 @@ public class AnimeObject implements Comparable<AnimeObject>, Serializable {
                 Type type = new TypeToken<List<WebInfo.AnimeChapter>>() {
                 }.getType();
                 return gson.toJson(list, type);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 return "{}";
             }
         }

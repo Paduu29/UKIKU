@@ -2,7 +2,6 @@ package knf.kuma.commons
 
 import knf.kuma.custom.TlsOnlySocketFactory
 import okhttp3.Cache
-import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import java.io.File
 import java.security.cert.CertificateException
@@ -19,20 +18,12 @@ object NoSSLOkHttpClient {
             val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
                 @Throws(CertificateException::class)
                 override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {
-                    noCrash(false) {
-                        chain.forEach {
-                            it.checkValidity()
-                        }
-                    }
+
                 }
 
                 @Throws(CertificateException::class)
                 override fun checkServerTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {
-                    noCrash(false) {
-                        chain.forEach {
-                            it.checkValidity()
-                        }
-                    }
+
                 }
 
                 override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> {
@@ -53,15 +44,6 @@ object NoSSLOkHttpClient {
                 sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
                 cache(appCache)
                 hostnameVerifier { _, _ -> /*isHostValid(hostName)*/ true }
-                connectionSpecs(
-                    listOf(
-                        ConnectionSpec.CLEARTEXT,
-                        ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
-                            .allEnabledTlsVersions()
-                            .allEnabledCipherSuites()
-                            .build()
-                    )
-                )
             }
             /*val dns = DnsOverHttps.Builder().client(builder).apply {
                 url("https://dns.google/dns-query".toHttpUrl())

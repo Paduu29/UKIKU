@@ -20,9 +20,9 @@ import knf.kuma.ads.AdsUtilsMob
 import knf.kuma.ads.implAdsFavorite
 import knf.kuma.animeinfo.ActivityAnimeMaterial
 import knf.kuma.commons.PatternUtil
-import knf.kuma.commons.PicassoSingle
 import knf.kuma.commons.PrefsUtil
 import knf.kuma.commons.bind
+import knf.kuma.commons.load
 import knf.kuma.favorite.objects.InfoContainer
 import knf.kuma.pojos.FavoriteObject
 import kotlinx.coroutines.Dispatchers
@@ -69,8 +69,7 @@ class FavsSectionAdapterMaterial(private val fragment: Fragment, private val rec
             holder.header.text = favoriteObject.name
             holder.action.setOnClickListener { listener.onEdit(favoriteObject.name ?: "") }
         } else if (holder is ItemHolder) {
-            PicassoSingle.get().load(PatternUtil.getCover(favoriteObject.aid
-                    ?: "")).into(holder.imageView)
+            holder.imageView.load(PatternUtil.getCover(favoriteObject.aid ?: ""))
             holder.title.text = favoriteObject.name
             holder.type.text = favoriteObject.type
             holder.cardView.setOnClickListener { ActivityAnimeMaterial.open(fragment, favoriteObject, holder.imageView) }

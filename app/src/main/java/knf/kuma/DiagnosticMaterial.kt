@@ -47,6 +47,7 @@ import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.net.ConnectException
 import java.net.URL
 import java.net.UnknownHostException
 
@@ -84,8 +85,12 @@ class DiagnosticMaterial : GenericActivity() {
             response.statusCode()
         } catch (e: HttpStatusException) {
             e.statusCode
-        } catch (e: UnknownHostException) {
+        } catch (_: UnknownHostException) {
             404
+        } catch (_: ConnectException) {
+            4000
+        } catch (_: Throwable) {
+            5000
         }
         networkStatus.mainResult = responseCode
         val loadingTime = System.currentTimeMillis() - startTime
@@ -99,8 +104,8 @@ class DiagnosticMaterial : GenericActivity() {
             )
             binding.timeoutState.load(
                 "$loadingTime ms", when {
-                    loadingTime < 1000 -> StateView.STATE_OK
-                    loadingTime < 2000 -> StateView.STATE_WARNING
+                    responseCode < 1000 && loadingTime < 1000 -> StateView.STATE_OK
+                    responseCode < 1000 && loadingTime < 2000 -> StateView.STATE_WARNING
                     else -> StateView.STATE_ERROR
                 }
             )
@@ -109,6 +114,8 @@ class DiagnosticMaterial : GenericActivity() {
                 responseCode == 502 -> "Animeflv caido"
                 responseCode == 503 -> "Cloudflare activado"
                 responseCode == 403 -> "Bloqueado por animeflv"
+                responseCode in listOf(3000, 4000) -> "Error de conexión a Animeflv"
+                responseCode == 5000 -> "Error al intentar conectar"
                 loadingTime > 1000 -> "Página lenta"
                 else -> "Desconocido"
             }, when {

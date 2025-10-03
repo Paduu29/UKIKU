@@ -16,7 +16,6 @@ import knf.kuma.commons.doOnUI
 import knf.kuma.commons.isTV
 import knf.kuma.commons.toast
 import knf.kuma.custom.GenericActivity
-import knf.kuma.custom.SSLManager
 import knf.kuma.directory.DirManager
 import knf.kuma.directory.DirectoryService
 import knf.kuma.jobscheduler.DirUpdateWork
@@ -41,7 +40,7 @@ class TVMain : TVBaseActivity(), TVServersFactory.ServersInterface, UpdateChecke
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SSLManager.disable()
+        //SSLManager.disable()
         if (!isTV) {
             finish()
             startActivity(Intent(this, DesignUtils.mainClass))
@@ -78,7 +77,7 @@ class TVMain : TVBaseActivity(), TVServersFactory.ServersInterface, UpdateChecke
                 PrefsUtil.isSecurityUpdated = false
                 PrefsUtil.spErrorType = "GPlay services no esta disponible"
                 e.printStackTrace()
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 PrefsUtil.isSecurityUpdated = false
                 //Toaster.toastLong("SProvider: Unknown error, ${e.message}")
                 PrefsUtil.spErrorType = "Error desconocido: ${e.message}"
@@ -159,7 +158,7 @@ class TVMain : TVBaseActivity(), TVServersFactory.ServersInterface, UpdateChecke
         } else
             try {
                 if (data != null)
-                    if (resultCode == Activity.RESULT_OK) {
+                    if (resultCode == RESULT_OK) {
                         val bundle = data.extras
                         if (requestCode == TVServersFactory.REQUEST_CODE_MULTI)
                             serversFactory?.analyzeMulti(bundle?.getInt("position", 0) ?: 0)
@@ -169,7 +168,7 @@ class TVMain : TVBaseActivity(), TVServersFactory.ServersInterface, UpdateChecke
                             else
                                 serversFactory?.analyzeServer(bundle?.getInt("position", 0) ?: 0)
                         }
-                    } else if (resultCode == Activity.RESULT_CANCELED && data.extras?.getBoolean(
+                    } else if (resultCode == RESULT_CANCELED && data.extras?.getBoolean(
                             "is_video_server",
                             false
                         ) == true

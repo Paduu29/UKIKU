@@ -64,6 +64,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme.DayNight"
         android:networkSecurityConfig="@xml/network_security"
+        android:usesCleartextTraffic="true"
         tools:replace="android:fullBackupContent">
 
         <meta-data

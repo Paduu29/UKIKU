@@ -27,6 +27,7 @@ import knf.kuma.pojos.SeenObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import pl.droidsonroids.jspoon.ElementConverter
 import pl.droidsonroids.jspoon.annotation.Selector
@@ -65,6 +66,16 @@ open class RecentModel {
 
     @Ignore
     lateinit var state: RecentState
+
+    fun generate(element: Element) {
+        aid = element.select("img[src]").attr("src").let {
+            Regex("/(\\d+)\\.\\w+").find(it)?.groupValues?.get(1) ?: "0"
+        }
+        name = element.select(".Title").text()
+        chapter = element.select(".Capi").text()
+        chapterUrl = element.select("a").attr("href")
+        img = element.select("img[src]").attr("src")
+    }
 
     fun prepare() {
         if (!aid.isDigitsOnly())
@@ -126,6 +137,17 @@ class RecentState(val model: RecentModel) {
 class RecentsPage {
     @Selector("ul.ListEpisodios li:not(article), ul.List-Episodes li:not(article)")
     var list: List<RecentModel> = emptyList()
+
+    fun create(html: String): RecentsPage {
+        val doc = Jsoup.parse(html, "https://www3.animeflv.net")
+        val episodes = doc.select("ul.ListEpisodios li:not(article), ul.List-Episodes li:not(article)")
+        list = episodes.map {
+            RecentModel().apply {
+                generate(it)
+            }
+        }
+        return this
+    }
 }
 
 class AFixer : ElementConverter<String> {

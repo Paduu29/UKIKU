@@ -13,7 +13,9 @@ class DirectoryPageCompact {
 
     class NextConverter @Keep constructor() : ElementConverter<Boolean> {
         override fun convert(node: Element, selector: Selector): Boolean {
-            val last = node.select("li").last()
+            val pages = node.select("li")
+            if (pages.size <= 1) return false
+            val last = pages.last()
             val child = last.child(0)
             return !last.hasClass("disabled") && child.hasAttr("rel") && child.attr("href") != "#"
         }

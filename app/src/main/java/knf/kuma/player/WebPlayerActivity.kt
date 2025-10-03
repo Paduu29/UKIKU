@@ -6,14 +6,14 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import knf.kuma.databinding.ActivityBrowserBinding
-import knf.kuma.uagen.randomPCUA
+import org.jetbrains.anko.longToast
 
 class WebPlayerActivity : AppCompatActivity() {
     val binding by lazy { ActivityBrowserBinding.inflate(layoutInflater) }
@@ -21,6 +21,13 @@ class WebPlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setBackgroundDrawable(ColorDrawable(Color.BLACK))
+        try {
+            CookieManager.getInstance()
+        } catch (_: Exception) {
+            longToast("Webview no está disponible en tu dispositivo")
+            finish()
+            return
+        }
         setContentView(binding.root)
         binding.webview.apply {
             setBackgroundColor(Color.TRANSPARENT)

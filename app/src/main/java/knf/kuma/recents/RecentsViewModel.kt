@@ -13,6 +13,6 @@ class RecentsViewModel : ViewModel() {
         get() = CacheDB.INSTANCE.recentsDAO().objects
 
     fun reload() {
-        repository.reloadRecents()
+        repository.reloadRecentsAlt()
     }
 }

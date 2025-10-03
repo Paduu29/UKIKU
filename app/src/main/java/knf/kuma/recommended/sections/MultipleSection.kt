@@ -8,7 +8,7 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection
 import knf.kuma.R
 import knf.kuma.animeinfo.ActivityAnime
 import knf.kuma.commons.PatternUtil
-import knf.kuma.commons.PicassoSingle
+import knf.kuma.commons.load
 import knf.kuma.recommended.AnimeShortObject
 import knf.kuma.recommended.RHHolder
 import knf.kuma.recommended.RIHolder
@@ -34,7 +34,7 @@ class MultipleSection(private val activity: Activity, private val name: String, 
     override fun onBindItemViewHolder(h: RecyclerView.ViewHolder, position: Int) {
         val holder = h as RIHolder
         val animeObject = animeObjects[position]
-        PicassoSingle.get().load(PatternUtil.getCover(animeObject.aid)).into(holder.img)
+        holder.img.load(PatternUtil.getCover(animeObject.aid))
         holder.title.text = animeObject.name
         holder.type.text = animeObject.type
         holder.cardView.setOnClickListener { ActivityAnime.open(activity, animeObject, holder.img, true, true) }

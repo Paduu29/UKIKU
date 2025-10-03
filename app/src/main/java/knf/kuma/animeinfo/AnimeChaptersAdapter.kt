@@ -41,12 +41,12 @@ import knf.kuma.commons.CastUtil
 import knf.kuma.commons.EAHelper
 import knf.kuma.commons.FileWrapper
 import knf.kuma.commons.Network
-import knf.kuma.commons.PicassoSingle
 import knf.kuma.commons.PrefsUtil
 import knf.kuma.commons.bind
 import knf.kuma.commons.distinct
 import knf.kuma.commons.doOnUI
 import knf.kuma.commons.isFullMode
+import knf.kuma.commons.load
 import knf.kuma.commons.noCrash
 import knf.kuma.commons.noCrashSuspend
 import knf.kuma.commons.safeShow
@@ -129,7 +129,7 @@ class AnimeChaptersAdapter(private val fragment: Fragment, private val recyclerV
         if (!Network.isConnected || chapter.chapter.img == null)
             holder.imageView.visibility = View.GONE
         if (chapter.chapter.img != null)
-            PicassoSingle.get().load(chapter.chapter.img).into(holder.imageView, object : Callback {
+            holder.imageView.load(chapter.chapter.img, object : Callback {
                 override fun onSuccess() {
                     holder.imageView.visibility = View.VISIBLE
                 }

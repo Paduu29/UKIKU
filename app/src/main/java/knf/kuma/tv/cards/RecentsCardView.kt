@@ -5,7 +5,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import knf.kuma.R
 import knf.kuma.commons.PatternUtil
-import knf.kuma.commons.load
+import knf.kuma.commons.loadGlide
 import knf.kuma.pojos.RecentObject
 import knf.kuma.tv.BindableCardView
 import org.jetbrains.anko.find
@@ -18,7 +18,7 @@ class RecentsCardView(context: Context) : BindableCardView<RecentObject>(context
         get() = R.layout.item_tv_card_chapter
 
     override fun bind(data: RecentObject) {
-        imageView.load(PatternUtil.getCover(data.aid))
+        imageView.loadGlide(PatternUtil.getCover(data.aid))
         find<TextView>(R.id.title).text = data.name
         find<TextView>(R.id.chapter).text = data.chapter
     }

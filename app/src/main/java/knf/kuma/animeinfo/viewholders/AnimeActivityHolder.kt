@@ -16,10 +16,10 @@ import com.google.android.material.tabs.TabLayout
 import knf.kuma.R
 import knf.kuma.animeinfo.AnimePagerAdapter
 import knf.kuma.animeinfo.img.ActivityImgFull
-import knf.kuma.commons.PicassoSingle
 import knf.kuma.commons.bind
 import knf.kuma.commons.doOnUI
 import knf.kuma.commons.forceHide
+import knf.kuma.commons.load
 import org.jetbrains.anko.sdk27.coroutines.onClick
 
 
@@ -79,7 +79,7 @@ class AnimeActivityHolder(val activity: AppCompatActivity) {
 
     fun loadImg(link: String, listener: View.OnClickListener) {
         imageView.post {
-            PicassoSingle.get().load(link).noPlaceholder().into(imageView)
+            imageView.load(link)
             imageView.setOnClickListener(listener)
         }
     }
@@ -109,7 +109,7 @@ class AnimeActivityHolder(val activity: AppCompatActivity) {
             collapsingToolbarLayout.title = title
         val img = intent.getStringExtra("img")
         if (img != null) {
-            PicassoSingle.get().load(img).into(imageView)
+            imageView.load(img)
             imageView.setOnClickListener { activity.startActivity(Intent(activity, ActivityImgFull::class.java).setData(Uri.parse(img)).putExtra("title", title), ActivityOptionsCompat.makeSceneTransitionAnimation(activity, imageView, "img").toBundle()) }
         }
     }

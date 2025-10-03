@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import knf.kuma.R
-import knf.kuma.commons.PicassoSingle
+import knf.kuma.commons.loadGlide
 import knf.kuma.database.CacheDB
 import knf.kuma.pojos.AnimeObject
 import knf.kuma.tv.BindableCardView
@@ -23,9 +23,9 @@ class ChapterCardView(context: Context) : BindableCardView<AnimeObject.WebInfo.A
         get() = R.layout.item_tv_card_chapter_preview
 
     override fun bind(data: AnimeObject.WebInfo.AnimeChapter) {
-        PicassoSingle.get().load(data.img).into(imageView)
+        imageView.loadGlide(data.img)
         GlobalScope.launch(Dispatchers.Main) {
-            find<View>(R.id.indicator).visibility = if (withContext(Dispatchers.IO) { CacheDB.INSTANCE.seenDAO().chapterIsSeen(data.aid, data.number) }) View.VISIBLE else View.GONE
+            find<View>(R.id.indicator).visibility = if (withContext(Dispatchers.IO) { CacheDB.INSTANCE.seenDAO().chapterIsSeen(data.aid, data.number) }) VISIBLE else GONE
         }
         find<TextView>(R.id.chapter).text = data.number
     }

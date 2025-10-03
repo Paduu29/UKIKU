@@ -4,28 +4,24 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import knf.kuma.App
-import knf.kuma.commons.BypassUtil
-import knf.kuma.retrofit.Repository
+import knf.kuma.commons.jsoupCookiesAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class DirectoryDataSource(val factory: knf.kuma.retrofit.Factory, val type: String, val retryCallback: () -> Unit) : PagingSource<Int, DirObjectCompact>() {
+class DirectoryDataSource(val type: String, val retryCallback: () -> Unit) : PagingSource<Int, DirObjectCompact>() {
 
     override fun getRefreshKey(state: PagingState<Int, DirObjectCompact>): Int? = state.anchorPosition
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, DirObjectCompact> {
         val page = params.key?: 1
         try {
-            val response = withContext(Dispatchers.IO) { factory.getDirectory(BypassUtil.getStringCookie(App.context), BypassUtil.userAgent, type, page).execute() }
-            if (response.isSuccessful){
-                response.body()?.let {
-                    return LoadResult.Page(it.list, null, if (it.hasNext) page + 1 else null)
-                }
+            val dir = withContext(Dispatchers.IO) {
+                jsoupCookiesAdapter("https://www3.animeflv.net/browse?order=title&type[]=$type&page=$page", DirectoryPageCompact::class.java)
             }
-            retryCallback()
-            return LoadResult.Error(IllegalStateException(withContext(Dispatchers.IO) { response.errorBody()?.string() }))
+            return LoadResult.Page(dir.list, null, if (dir.hasNext) page + 1 else null)
         }catch (e:Exception){
+            e.printStackTrace()
+            retryCallback()
             return LoadResult.Error(e)
         }
     }
@@ -34,5 +30,5 @@ class DirectoryDataSource(val factory: knf.kuma.retrofit.Factory, val type: Stri
 fun createDirectoryPagedList(type: String, retryCallback: () -> Unit) =
         Pager(
             config = PagingConfig(24),
-            pagingSourceFactory = { DirectoryDataSource(Repository.getFactory("https://www3.animeflv.net"), type, retryCallback) }
+            pagingSourceFactory = { DirectoryDataSource(type, retryCallback) }
         ).flow

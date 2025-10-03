@@ -14,7 +14,11 @@ import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import knf.kuma.R
 import knf.kuma.animeinfo.ActivityAnimeMaterial
 import knf.kuma.backup.firestore.syncData
-import knf.kuma.commons.*
+import knf.kuma.commons.PatternUtil
+import knf.kuma.commons.bind
+import knf.kuma.commons.doOnUIGlobal
+import knf.kuma.commons.load
+import knf.kuma.commons.optionalBind
 import knf.kuma.database.CacheDB
 import knf.kuma.pojos.SeeingObject
 import org.jetbrains.anko.doAsync
@@ -44,7 +48,7 @@ internal class SeeingAdapterMaterial(private val activity: Activity, private val
         if (holder is SeeingItem)
             holder.chapter.text = getCardText(seeingObject)
         (holder as? SeeingItemNormal)?.apply {
-            PicassoSingle.get().load(PatternUtil.getCover(seeingObject.aid)).into(imageView)
+            imageView.load(PatternUtil.getCover(seeingObject.aid))
             title.text = seeingObject.title
             progressView?.visibility = View.GONE
             cardView.setOnClickListener { ActivityAnimeMaterial.open(activity, seeingObject) }
