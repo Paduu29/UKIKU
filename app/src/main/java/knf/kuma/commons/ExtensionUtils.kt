@@ -576,6 +576,12 @@ fun FloatingActionButton.forceHide() {
 fun httpRequest(url: String) =
     NoSSLOkHttpClient.get().newCall(okHttpCookies(url)).execute()
 
+fun httpJsoup(url: String) =
+    Jsoup.connect(url)
+        .ignoreContentType(true)
+        .ignoreHttpErrors(true)
+        .execute()
+
 fun jsoupCookies(url: String?, followRedirects: Boolean = true): Connection =
         Jsoup.connect(url)
                 .cookies(BypassUtil.getMapCookie(App.context))

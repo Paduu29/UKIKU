@@ -20,11 +20,10 @@ import knf.kuma.commons.Network
 import knf.kuma.commons.PrefsUtil
 import knf.kuma.commons.SSLSkipper
 import knf.kuma.commons.doOnUIGlobal
-import knf.kuma.commons.execute
 import knf.kuma.commons.isFullMode
+import knf.kuma.commons.jsoupCookies
 import knf.kuma.commons.jsoupCookiesDir
 import knf.kuma.commons.noCrash
-import knf.kuma.commons.okHttpCookies
 import knf.kuma.database.CacheDB
 import knf.kuma.database.dao.AnimeDAO
 import knf.kuma.download.FileAccessHelper
@@ -126,9 +125,9 @@ class DirectoryService : IntentService("Directory update") {
         FileAccessHelper.downloadExplorerCreator.createLinksList().forEach {
             if (!animeDAO.existLink("%${it.substringAfterLast(".net")}")){
                 try {
-                    val response = okHttpCookies(it).execute(followRedirects = true)
-                    val body = response.body?.string()
-                    if (response.code == 200 && body != null) {
+                    val response = jsoupCookies(it).execute()
+                    val body = response.body()
+                    if (response.statusCode() == 200 && body != null) {
                         val webInfo = jspoon.adapter(AnimeObject.WebInfo::class.java).fromHtml(body)
                         animeDAO.insert(AnimeObject(it, webInfo))
                     }

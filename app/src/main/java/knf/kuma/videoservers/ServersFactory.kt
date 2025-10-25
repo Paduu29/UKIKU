@@ -21,11 +21,25 @@ import knf.kuma.BuildConfig
 import knf.kuma.achievements.AchievementManager
 import knf.kuma.animeinfo.ktx.fileName
 import knf.kuma.backup.firestore.syncData
-import knf.kuma.commons.*
+import knf.kuma.commons.CastUtil
+import knf.kuma.commons.EAHelper
+import knf.kuma.commons.PrefsUtil
+import knf.kuma.commons.doOnUIGlobal
+import knf.kuma.commons.isNull
+import knf.kuma.commons.iterator
+import knf.kuma.commons.jsoupCookies
+import knf.kuma.commons.safeShow
+import knf.kuma.commons.showProgressSnackbar
+import knf.kuma.commons.showSnackbar
+import knf.kuma.commons.urlDecode
 import knf.kuma.custom.exceptions.EJNFException
 import knf.kuma.custom.snackbar.SnackProgressBarManager
 import knf.kuma.database.CacheDB
-import knf.kuma.download.*
+import knf.kuma.download.DownloadManagerCentral
+import knf.kuma.download.DownloadService
+import knf.kuma.download.FileAccessHelper
+import knf.kuma.download.MultipleDownloadManager
+import knf.kuma.download.service
 import knf.kuma.player.openWebPlayer
 import knf.kuma.pojos.AnimeObject
 import knf.kuma.pojos.DownloadObject
@@ -38,7 +52,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.anko.doAsync
 import org.json.JSONObject
 import xdroid.toaster.Toaster
-import java.util.*
+import java.util.Locale
 import kotlin.math.abs
 
 
@@ -376,7 +390,7 @@ class ServersFactory {
                 }
             } else
                 GlobalScope.launch(Dispatchers.Main) {
-                    callOnFinish(true, withContext(Dispatchers.IO) { DownloadManager.start(downloadObject) })
+                    callOnFinish(true, withContext(Dispatchers.IO) { DownloadManagerCentral.start(downloadObject) })
                 }
         }
     }

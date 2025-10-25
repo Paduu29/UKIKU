@@ -9,7 +9,7 @@ import knf.kuma.favorite.objects.InfoContainer
 import knf.kuma.pojos.FavSection
 import knf.kuma.pojos.FavoriteObject
 import org.jetbrains.anko.doAsync
-import java.util.*
+import java.util.Collections
 
 object FavSectionHelper {
     private val infoContainer = InfoContainer()
@@ -71,7 +71,7 @@ object FavSectionHelper {
     }
 
     private fun setLiveData(list: MutableList<FavoriteObject>) {
-        doOnUIGlobal { liveData.setValue(list) }
+        doOnUIGlobal { liveData.value = list }
     }
 
     fun reload() {

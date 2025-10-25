@@ -137,13 +137,6 @@
             android:title="Reproductor avanzado"/>
         <SwitchPreference
             android:defaultValue="false"
-            android:dependency="experimental_player"
-            android:icon="@drawable/ic_library_video"
-            android:key="experimental_okhttp"
-            android:summary="Mejora la conexión en algunos casos"
-            android:title="Usar OkHttp"/>
-        <SwitchPreference
-            android:defaultValue="false"
             android:icon="@drawable/ic_samsung_tv"
             android:key="force_local_cast"
             android:summary="Usar proxy para cast"

@@ -44,7 +44,7 @@ import knf.kuma.commons.noCrashLet
 import knf.kuma.commons.safeShow
 import knf.kuma.custom.SeenAnimeOverlay
 import knf.kuma.database.CacheDB
-import knf.kuma.download.DownloadManager
+import knf.kuma.download.DownloadManagerCentral
 import knf.kuma.download.FileAccessHelper
 import knf.kuma.pojos.AnimeObject
 import knf.kuma.pojos.DownloadObject
@@ -142,7 +142,7 @@ class RecentsAdapter internal constructor(private val fragment: Fragment, privat
                                             )} de ${recentObject.name}?")
                                             positiveButton(text = "CONFIRMAR") {
                                                 FileAccessHelper.deletePath(recentObject.filePath, true)
-                                                DownloadManager.cancel(recentObject.eid)
+                                                DownloadManagerCentral.cancel(recentObject.eid)
                                                 QueueManager.remove(recentObject.eid)
                                                 recentObject.fileWrapper().exist = false
                                                 holder.setState(isNetworkAvailable, false)

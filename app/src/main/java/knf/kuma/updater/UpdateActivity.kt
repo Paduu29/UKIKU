@@ -19,7 +19,7 @@ import knf.kuma.commons.getUpdateDir
 import knf.kuma.commons.safeShow
 import knf.kuma.custom.GenericActivity
 import knf.kuma.databinding.ActivityUpdaterBinding
-import knf.kuma.download.DownloadManager
+import knf.kuma.download.DownloadManagerCentral
 import java.io.File
 
 class UpdateActivity : GenericActivity() {
@@ -76,7 +76,7 @@ class UpdateActivity : GenericActivity() {
     }
 
     private fun install() {
-        DownloadManager.pauseAll()
+        DownloadManagerCentral.pauseAll()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val intent = Intent(Intent.ACTION_INSTALL_PACKAGE, FileProvider.getUriForFile(this, "${applicationContext.packageName}.fileprovider", update))
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)

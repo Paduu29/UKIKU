@@ -17,7 +17,6 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
@@ -25,9 +24,7 @@ import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.reactivex.rxjava3.disposables.Disposable
-import knf.kuma.commons.AllSSLOkHttpClient
 import knf.kuma.commons.BypassUtil
-import knf.kuma.commons.PrefsUtil
 import knf.kuma.commons.noCrashLetNullable
 import knf.kuma.database.CacheDB
 import knf.kuma.pojos.QueueObject
@@ -95,30 +92,17 @@ class PlayerHolder(
     private fun createExtractorMediaSource(descriptor: MediaDescriptionCompat): MediaData {
         val item = MediaItem.fromUri(descriptor.mediaUri?: Uri.EMPTY)
         if (intent.getBooleanExtra("isFile", false)) return MediaData(item)
-        val httpFactory = if (PrefsUtil.useExperimentalOkHttp)
-            OkHttpDataSource.Factory(AllSSLOkHttpClient.get()).apply {
-                descriptor.extras?.getStringArray("headers")?.let { headerArray ->
-                    val headers = headerArray.toList().chunked(2).associate { Pair(it[0], it[1]) }
-                    setDefaultRequestProperties(headers)
-                    if (headers.contains("User-Agent")) {
-                        setUserAgent(headers["User-Agent"])
-                    } else {
-                        setUserAgent(BypassUtil.userAgent)
-                    }
-                }?: setUserAgent(BypassUtil.userAgent)
-            }
-        else
-            DefaultHttpDataSource.Factory().apply {
-                descriptor.extras?.getStringArray("headers")?.let { headerArray ->
-                    val headers = headerArray.toList().chunked(2).associate { Pair(it[0], it[1]) }
-                    setDefaultRequestProperties(headers)
-                    if (headers.contains("User-Agent")) {
-                        setUserAgent(headers["User-Agent"])
-                    } else {
-                        setUserAgent(BypassUtil.userAgent)
-                    }
-                }?: setUserAgent(BypassUtil.userAgent)
-            }
+        val httpFactory = DefaultHttpDataSource.Factory().apply {
+            descriptor.extras?.getStringArray("headers")?.let { headerArray ->
+                val headers = headerArray.toList().chunked(2).associate { Pair(it[0], it[1]) }
+                setDefaultRequestProperties(headers)
+                if (headers.contains("User-Agent")) {
+                    setUserAgent(headers["User-Agent"])
+                } else {
+                    setUserAgent(BypassUtil.userAgent)
+                }
+            } ?: setUserAgent(BypassUtil.userAgent)
+        }
         val factory = when(MimeTypeMap.getFileExtensionFromUrl(descriptor.mediaUri?.toString())) {
             "m3u8" -> HlsMediaSource.Factory(httpFactory)
             else -> ProgressiveMediaSource.Factory(httpFactory)

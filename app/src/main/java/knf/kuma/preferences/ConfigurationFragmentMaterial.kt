@@ -53,7 +53,7 @@ import knf.kuma.database.CacheDB
 import knf.kuma.directory.DirManager
 import knf.kuma.directory.DirectoryService
 import knf.kuma.directory.DirectoryUpdateService
-import knf.kuma.download.DownloadManager
+import knf.kuma.download.DownloadManagerCentral
 import knf.kuma.download.FileAccessHelper
 import knf.kuma.jobscheduler.BackUpWork
 import knf.kuma.jobscheduler.DirUpdateWork
@@ -466,7 +466,7 @@ class ConfigurationFragmentMaterial : PreferenceFragmentCompat() {
                     }
                 }
                 preferenceScreen.findPreference<Preference>("max_parallel_downloads")?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                    DownloadManager.setParallelDownloads(newValue as? String)
+                    DownloadManagerCentral.setParallelDownloads(newValue as? String)
                     true
                 }
                 preferenceScreen.findPreference<SwitchPreference>("remember_server")?.apply {

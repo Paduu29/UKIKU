@@ -55,7 +55,7 @@ object ExplorerCreator {
     }
 
     private fun postState(state: String?) {
-        doOnUIGlobal { STATE_LISTENER.setValue(state) }
+        doOnUIGlobal { STATE_LISTENER.value = state }
     }
 
     interface EmptyListener {

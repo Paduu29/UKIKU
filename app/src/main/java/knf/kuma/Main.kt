@@ -3,7 +3,6 @@ package knf.kuma
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -718,7 +717,7 @@ class Main : GenericActivity(),
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         noCrash {
-            if (requestCode == FileAccessHelper.SD_REQUEST && resultCode == Activity.RESULT_OK) {
+            if (requestCode == FileAccessHelper.SD_REQUEST && resultCode == RESULT_OK) {
                 val validation = FileAccessHelper.isUriValid(data?.data)
                 if (!validation.isValid) {
                     Toaster.toast("Directorio invalido: $validation")

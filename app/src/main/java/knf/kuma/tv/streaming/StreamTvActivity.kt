@@ -1,6 +1,5 @@
 package knf.kuma.tv.streaming
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -73,7 +72,7 @@ class StreamTvActivity : TVBaseActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         try {
             if (data != null)
-                if (resultCode == Activity.RESULT_OK) {
+                if (resultCode == RESULT_OK) {
                     val bundle = data.extras
                     if (requestCode == TVServersFactory.REQUEST_CODE_MULTI)
                         serversFactory?.analyzeMulti(bundle?.getInt("position", 0) ?: 0)
@@ -83,7 +82,7 @@ class StreamTvActivity : TVBaseActivity() {
                         else
                             serversFactory?.analyzeServer(bundle?.getInt("position", 0) ?: 0)
                     }
-                } else if (resultCode == Activity.RESULT_CANCELED && data.extras?.getBoolean(
+                } else if (resultCode == RESULT_CANCELED && data.extras?.getBoolean(
                         "is_video_server",
                         false
                     ) == true

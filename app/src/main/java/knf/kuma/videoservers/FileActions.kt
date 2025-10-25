@@ -41,7 +41,7 @@ import knf.kuma.commons.toArray
 import knf.kuma.commons.urlDecode
 import knf.kuma.custom.snackbar.SnackProgressBarManager
 import knf.kuma.database.CacheDB
-import knf.kuma.download.DownloadManager
+import knf.kuma.download.DownloadManagerCentral
 import knf.kuma.download.DownloadService
 import knf.kuma.download.FileAccessHelper
 import knf.kuma.download.MultipleDownloadManager
@@ -516,7 +516,7 @@ object FileActions {
                 actionRequest.callback.call(CallbackState.START_DOWNLOAD, true)
             } else {
                 reset()
-                actionRequest.callback.call(CallbackState.START_DOWNLOAD, DownloadManager.start(actionRequest.downloadObject))
+                actionRequest.callback.call(CallbackState.START_DOWNLOAD, DownloadManagerCentral.start(actionRequest.downloadObject))
             }
         }
     }

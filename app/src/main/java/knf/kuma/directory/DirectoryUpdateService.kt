@@ -60,7 +60,7 @@ class DirectoryUpdateService : IntentService("Directory re-update") {
             return
         }
         isRunning = true
-        manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val animeDAO = CacheDB.INSTANCE.animeDAO()
         needCookies = BypassUtil.isCloudflareActive()
         DirManager.checkPreDir(true)

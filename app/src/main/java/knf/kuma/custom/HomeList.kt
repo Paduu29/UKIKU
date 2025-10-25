@@ -3,7 +3,6 @@ package knf.kuma.custom
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -69,24 +68,24 @@ class HomeList : LinearLayout {
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-        if (startHidden) visibility = View.GONE
+        if (startHidden) visibility = GONE
         viewAll.text = showAllText
         subheader.text = subheaderText
         errorTV.text = errorText
-        if (showAll) viewAll.visibility = View.VISIBLE
+        if (showAll) viewAll.visibility = VISIBLE
     }
 
     fun hide() {
         doOnUIGlobal {
             isHidden = true
-            visibility = View.GONE
+            visibility = GONE
         }
     }
 
     fun show() {
         doOnUIGlobal {
             isHidden = false
-            visibility = View.VISIBLE
+            visibility = VISIBLE
         }
     }
 
@@ -112,15 +111,15 @@ class HomeList : LinearLayout {
         doOnUIGlobal {
             if (showError)
                 errorTV.visibility = if (list.isEmpty())
-                    View.VISIBLE
+                    VISIBLE
                 else
-                    View.GONE
+                    GONE
             else
                 visibility = if (list.isNotEmpty() && !isHidden)
-                    View.VISIBLE
+                    VISIBLE
                 else
-                    View.GONE
-            progress.visibility = View.GONE
+                    GONE
+            progress.visibility = GONE
             adapter?.updateList(list)
         }
     }

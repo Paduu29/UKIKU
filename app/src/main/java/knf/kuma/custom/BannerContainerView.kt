@@ -19,7 +19,7 @@ class BannerContainerView @JvmOverloads constructor(context: Context, attrs: Att
             showBottom = array.getBoolean(R.styleable.BannerContainerView_showBottomSpace, false)
             array.recycle()
         }
-        View.inflate(context, R.layout.lay_banner_container, this)
+        inflate(context, R.layout.lay_banner_container, this)
     }
 
     fun show(view: View) {
@@ -28,9 +28,9 @@ class BannerContainerView @JvmOverloads constructor(context: Context, attrs: Att
                 find<View>(R.id.spaceBottom).layoutParams.height = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
                 WindowInsetsCompat.CONSUMED
             }
-            find<View>(R.id.spaceBottom).visibility = View.VISIBLE
+            find<View>(R.id.spaceBottom).visibility = VISIBLE
         }
-        find<View>(R.id.spaceTop).visibility = View.VISIBLE
+        find<View>(R.id.spaceTop).visibility = VISIBLE
         with(find<ViewGroup>(R.id.container)) {
             removeAllViews()
             addView(view)

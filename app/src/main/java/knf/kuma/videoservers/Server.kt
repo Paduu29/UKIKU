@@ -7,8 +7,7 @@ import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import knf.kuma.commons.NoSSLOkHttpClient
-import okhttp3.Request
+import org.jsoup.Jsoup
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -73,18 +72,20 @@ abstract class Server(internal var context: Context, internal var baseLink: Stri
         if (videoServer.skipVerification) return videoServer
         for (option in ArrayList(videoServer.options))
             try {
-                val request = Request.Builder()
-                    .url(option.url ?: "")
-                if (option.headers != null)
-                    for (pair in option.headers?.createHeaders() ?: arrayListOf())
-                        request.addHeader(pair.first, pair.second)
-                val response = NoSSLOkHttpClient.get().newCall(request.build()).execute()
-                if (!response.isSuccessful) {
-                    Log.e("Remove Option", "Server: " + option.server + "\nUrl: " + option.url + "\nCode: " + response.code)
+                val request = Jsoup.connect(option.url ?: "")
+                    .ignoreHttpErrors(true)
+                    .ignoreContentType(true).apply {
+                        if (option.headers != null) {
+                            for (pair in option.headers?.createHeaders() ?: arrayListOf()) {
+                                header(pair.first, pair.second)
+                            }
+                        }
+                    }
+                val response = request.execute()
+                if (response.statusCode() > 300 || response.statusCode() < 200) {
+                    Log.e("Remove Option", "Server: " + option.server + "\nUrl: " + option.url + "\nCode: " + response.statusCode())
                     videoServer.options.remove(option)
                 }
-                if (response.body != null)
-                    response.close()
             } catch (e: Exception) {
                 e.printStackTrace()
                 videoServer.options.remove(option)

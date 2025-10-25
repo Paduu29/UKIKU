@@ -31,7 +31,7 @@ import knf.kuma.commons.load
 import knf.kuma.commons.onClickMenu
 import knf.kuma.commons.safeShow
 import knf.kuma.database.CacheDB
-import knf.kuma.download.DownloadManager
+import knf.kuma.download.DownloadManagerCentral
 import knf.kuma.download.FileAccessHelper
 import knf.kuma.pojos.DownloadObject
 import knf.kuma.pojos.RecordObject
@@ -135,7 +135,7 @@ class RecentModelsAdapter(private val fragment: Fragment) : ListAdapter<RecentMo
                                             FileAccessHelper.deletePath(item.extras.filePath, false)
                                             item.state.isDeleting = false
                                             item.state.checkIsDownloaded
-                                            DownloadManager.cancel(item.extras.eid)
+                                            DownloadManagerCentral.cancel(item.extras.eid)
                                             QueueManager.remove(item.extras.eid)
                                         }
                                     }
@@ -372,7 +372,7 @@ class RecentModelsAdapter(private val fragment: Fragment) : ListAdapter<RecentMo
                         lifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                             item.state.isDownloaded = false
                             FileAccessHelper.deletePath(item.extras.filePath, true)
-                            DownloadManager.cancel(item.extras.eid)
+                            DownloadManagerCentral.cancel(item.extras.eid)
                             QueueManager.remove(item.extras.eid)
                         }
                     }

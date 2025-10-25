@@ -3,7 +3,6 @@ package knf.kuma.custom
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.RelativeLayout
 import knf.kuma.R
 import knf.kuma.achievements.AchievementManager
@@ -61,7 +60,7 @@ class SyncItemView : RelativeLayout {
         super.onFinishInflate()
         binding.title.text = cardTitle
         if (!showDivider)
-            binding.separator.visibility = View.GONE
+            binding.separator.visibility = GONE
         if (hideBackup)
             binding.backup.isEnabled = false
     }

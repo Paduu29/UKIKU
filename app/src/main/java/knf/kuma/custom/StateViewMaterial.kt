@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.withStyledAttributes
 import knf.kuma.R
 import knf.kuma.commons.doOnUIGlobal
 import org.jetbrains.anko.find
@@ -19,11 +20,11 @@ class StateViewMaterial @JvmOverloads constructor(context: Context, attrs: Attri
 
     init {
         attrs?.let {
-            val array = context.obtainStyledAttributes(it, R.styleable.StateViewMaterial)
-            titleText = array.getString(R.styleable.StateViewMaterial_svm_title) ?: titleText
-            array.recycle()
+            context.withStyledAttributes(it, R.styleable.StateViewMaterial) {
+                titleText = getString(R.styleable.StateViewMaterial_svm_title) ?: titleText
+            }
         }
-        View.inflate(context, R.layout.layout_loading_text_material, this)
+        inflate(context, R.layout.layout_loading_text_material, this)
     }
 
     override fun onFinishInflate() {
@@ -34,7 +35,7 @@ class StateViewMaterial @JvmOverloads constructor(context: Context, attrs: Attri
     fun load(contentText: String, state: Int = STATE_NORMAL) {
         val shortAnimationDuration = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         doOnUIGlobal {
-            visibility = View.VISIBLE
+            visibility = VISIBLE
             val textView = find<TextView>(R.id.text)
             val loading = find<View>(R.id.loading)
             when (state) {
@@ -46,7 +47,7 @@ class StateViewMaterial @JvmOverloads constructor(context: Context, attrs: Attri
                 text = contentText
                 if (!isSetted) {
                     alpha = 0f
-                    visibility = View.VISIBLE
+                    visibility = VISIBLE
                     animate()
                             .alpha(1f)
                             .setDuration(shortAnimationDuration)
@@ -59,7 +60,7 @@ class StateViewMaterial @JvmOverloads constructor(context: Context, attrs: Attri
                         .setDuration(shortAnimationDuration)
                         .setListener(object : AnimatorListenerAdapter() {
                             override fun onAnimationEnd(animation: Animator) {
-                                loading.visibility = View.GONE
+                                loading.visibility = GONE
                             }
                         })
             isSetted = true

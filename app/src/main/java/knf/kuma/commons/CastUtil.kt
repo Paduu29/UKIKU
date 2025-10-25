@@ -98,7 +98,7 @@ class CastUtil private constructor(private val context: Context) : CastListener,
 
     private fun setEid(eid: String) {
         doOnUIGlobal {
-            casting.setValue(eid)
+            casting.value = eid
         }
     }
 

@@ -17,7 +17,7 @@ import knf.kuma.commons.safeShow
 import knf.kuma.commons.showSnackbar
 import knf.kuma.database.CacheDB
 import knf.kuma.databinding.RecyclerDownloadingBinding
-import knf.kuma.download.DownloadManager
+import knf.kuma.download.DownloadManagerCentral
 import knf.kuma.pojos.DownloadObject
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.sdk27.coroutines.onClick
@@ -58,7 +58,7 @@ class FragmentDownloadsMaterial : FragmentBase() {
         binding.clear.visibility = View.GONE
         val snackbar = binding.recycler.showSnackbar("Limpiando lista...", Snackbar.LENGTH_INDEFINITE)
         doAsync {
-            DownloadManager.cancelAll()
+            DownloadManagerCentral.cancelAll()
             doOnUI { snackbar.safeDismiss() }
         }
     }

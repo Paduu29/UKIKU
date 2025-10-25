@@ -8,13 +8,11 @@ import android.content.Context
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatTextView
-import java.util.*
 
 class ExpandableTV @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : AppCompatTextView(context, attrs, defStyle) {
 
@@ -297,7 +295,7 @@ class ExpandableTV @JvmOverloads constructor(context: Context, attrs: AttributeS
         maxLines = 4
         mMaxLines = 4
         if (!needIndicator)
-            indicator?.post { indicator?.visibility = View.GONE }
+            indicator?.post { indicator?.visibility = GONE }
     }
 
     /**

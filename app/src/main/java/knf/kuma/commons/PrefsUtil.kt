@@ -188,9 +188,6 @@ object PrefsUtil {
     val isGroupingEnabled: Boolean
         get() = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("group_notifications", true) && canGroupNotifications
 
-    val useExperimentalOkHttp: Boolean
-        get() = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("experimental_okhttp", false)
-
     var storageType: String
         get() = PreferenceManager.getDefaultSharedPreferences(context).getString("storage_type", "Sin almacenamiento")
                 ?: "Sin almacenamiento"

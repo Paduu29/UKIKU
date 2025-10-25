@@ -1,16 +1,19 @@
 package knf.kuma.animeinfo.img
 
 import android.os.Bundle
+import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
 import knf.kuma.commons.doOnUI
-import knf.kuma.commons.execute
+import knf.kuma.commons.httpJsoup
 import knf.kuma.commons.iterator
 import knf.kuma.commons.safeDismiss
 import knf.kuma.commons.showSnackbar
 import knf.kuma.custom.GenericActivity
 import knf.kuma.databinding.LayoutImgBigBaseBinding
-import okhttp3.Request
 import org.jetbrains.anko.doAsync
 import org.json.JSONObject
 import java.net.URLEncoder
@@ -27,6 +30,12 @@ class ActivityImgFull : GenericActivity() {
         binding.pager.adapter = ImgPagerAdapter(supportFragmentManager, intent.getStringExtra(keyTitle)
                 ?: "", listOf(intent.dataString ?: ""))
         binding.indicator.setViewPager(binding.pager)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.indicator) { _, insets ->
+            binding.indicator.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = topMargin + insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            }
+            WindowInsetsCompat.CONSUMED
+        }
         searchInMAL()
     }
 
@@ -36,31 +45,27 @@ class ActivityImgFull : GenericActivity() {
                 val snackbar = binding.pager.showSnackbar("Buscando mejores imagenes...", Snackbar.LENGTH_INDEFINITE)
                 try {
                     val title = intent.getStringExtra(keyTitle)
-                    val response = Request.Builder()
-                        .url("https://api.jikan.moe/v4/anime?q=${URLEncoder.encode(title, "utf-8")}&page=1")
-                            .build().execute()
-                    if (response.code != 200)
-                        throw IllegalStateException("Response code: ${response.code}")
+                    val response = httpJsoup("https://api.jikan.moe/v4/anime?q=${URLEncoder.encode(title, "utf-8")}&page=1")
+                    if (response.statusCode() != 200)
+                        throw IllegalStateException("Response code: ${response.statusCode()}")
                     val results = JSONObject(
-                        response.body?.string()
+                        response.body()
                             ?: "{}"
                     ).getJSONArray("data")
-                    response.close()
                     for (i in 0 until results.length()) {
                         val json = results.getJSONObject(i)
-                        val name = json.getString(keyTitle).lowercase(Locale.getDefault())
+                        val name = json.getJSONArray("titles").getJSONObject(0).getString("title").lowercase(Locale.getDefault())
                         if (title?.lowercase(Locale.getDefault()) == name) {
                             val list = mutableListOf<String>()
                             //list.add(json.getString("image_url"))
                             try {
-                                val picturesResponse = Request.Builder().url("https://api.jikan.moe/v4/anime/${json.getString("mal_id")}/pictures").build().execute()
-                                if (picturesResponse.code != 200)
-                                    throw IllegalStateException("Response code: ${picturesResponse.code}")
+                                val picturesResponse = httpJsoup("https://api.jikan.moe/v4/anime/${json.getString("mal_id")}/pictures")
+                                if (picturesResponse.statusCode() != 200)
+                                    throw IllegalStateException("Response code: ${picturesResponse.statusCode()}")
                                 val picturesArray = JSONObject(
-                                    picturesResponse.body?.string()
+                                    picturesResponse.body()
                                         ?: "{}"
                                 ).getJSONArray("data")
-                                picturesResponse.close()
                                 for (item in picturesArray) {
                                     list.add(item.getJSONObject("jpg").getString("large_image_url"))
                                 }

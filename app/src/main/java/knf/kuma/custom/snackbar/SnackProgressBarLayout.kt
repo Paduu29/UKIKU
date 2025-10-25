@@ -14,6 +14,7 @@ import androidx.annotation.Keep
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.isVisible
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.google.android.material.snackbar.ContentViewCallback
 import knf.kuma.R
@@ -163,13 +164,13 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
         val hasAction = actionText.text.toString().isNotEmpty()
         // put the action into next line if width is more than 25% of total width, or if other element is taking the space
         val isActionNextLine = (actionText.measuredWidth.toFloat() / backgroundLayout.measuredWidth.toFloat() > 0.25f)
-                || circularDeterminateProgressBar.visibility == View.VISIBLE
-                || circularIndeterminateProgressBar.visibility == View.VISIBLE
-                || progressText.visibility == View.VISIBLE
-                || progressTextCircular.visibility == View.VISIBLE
+                || circularDeterminateProgressBar.isVisible
+                || circularIndeterminateProgressBar.isVisible
+                || progressText.isVisible
+                || progressTextCircular.isVisible
         if (hasAction) {
             if (isActionNextLine) {
-                actionText.visibility = View.GONE
+                actionText.visibility = GONE
                 // set actionNextLineLayout height
                 val height = if (textSize <= defaultTextSizeDp) {
                     heightActionNextLine
@@ -181,14 +182,14 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
                     layoutParams.height = height
                     actionNextLineLayout.layoutParams = layoutParams
                 }
-                actionNextLineLayout.visibility = View.VISIBLE
+                actionNextLineLayout.visibility = VISIBLE
             } else {
-                actionText.visibility = View.VISIBLE
-                actionNextLineLayout.visibility = View.GONE
+                actionText.visibility = VISIBLE
+                actionNextLineLayout.visibility = GONE
             }
         } else {
-            actionText.visibility = View.GONE
-            actionNextLineLayout.visibility = View.GONE
+            actionText.visibility = GONE
+            actionNextLineLayout.visibility = GONE
         }
         // set layout height according to message length
         val height: Int = when (lineCount) {
@@ -250,7 +251,7 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
                 circularDeterminateProgressBar,
                 circularIndeterminateProgressBar)
         viewsToAnimate.forEach { viewToAnimate ->
-            if (viewToAnimate.visibility == View.VISIBLE) {
+            if (viewToAnimate.visibility == VISIBLE) {
                 viewToAnimate.alpha = 0f
                 ViewCompat.animate(viewToAnimate).alpha(1f).setDuration(duration.toLong())
                         .setStartDelay(delay.toLong()).start()
@@ -275,7 +276,7 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
                 circularDeterminateProgressBar,
                 circularIndeterminateProgressBar)
         viewsToAnimate.forEach { viewToAnimate ->
-            if (viewToAnimate.visibility == View.VISIBLE) {
+            if (viewToAnimate.visibility == VISIBLE) {
                 viewToAnimate.alpha = 1f
                 ViewCompat.animate(viewToAnimate).alpha(0f).setDuration(duration.toLong())
                         .setStartDelay(delay.toLong()).start()

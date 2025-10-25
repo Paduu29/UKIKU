@@ -1,5 +1,7 @@
 package knf.kuma.custom;
 
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -35,9 +37,8 @@ import androidx.preference.PreferenceScreen;
 import androidx.preference.PreferenceViewHolder;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import knf.kuma.R;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
+import knf.kuma.R;
 
 /**
  * Shows a hierarchy of {@link Preference} objects as
@@ -133,7 +134,7 @@ public abstract class PreferenceFragmentCompat extends Fragment implements
     private boolean mInitDone;
     private Context mStyledContext;
     private int mLayoutResId = R.layout.preference_list_fragment;
-    private Handler mHandler = new Handler() {
+    private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -199,11 +200,10 @@ public abstract class PreferenceFragmentCompat extends Fragment implements
         final LayoutInflater themedInflater = inflater.cloneInContext(mStyledContext);
         final View view = themedInflater.inflate(mLayoutResId, container, false);
         final View rawListContainer = view.findViewById(android.R.id.list_container);
-        if (!(rawListContainer instanceof ViewGroup)) {
+        if (!(rawListContainer instanceof ViewGroup listContainer)) {
             throw new RuntimeException("Content has view with id attribute "
                     + "'android.R.id.list_container' that is not a ViewGroup class");
         }
-        final ViewGroup listContainer = (ViewGroup) rawListContainer;
         final RecyclerView listView = onCreateRecyclerView(themedInflater, listContainer,
                 savedInstanceState);
         if (listView == null) {

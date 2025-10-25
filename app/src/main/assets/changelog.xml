@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release code="224" version="5.3.14">
+        <change type="fix">Corrección StreamWish</change>
+        <change type="fix">Corrección imágenes en explorador</change>
+        <change type="fix">Error al reproducir videos en el reproductor interno en algunos casos</change>
+    </release>
     <release code="223" version="5.3.13">
         <change type="fix">Error al descargar en algunos dispositivos</change>
     </release>

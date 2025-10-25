@@ -212,7 +212,7 @@ class ExpandableTextView(context: Context, attrs: AttributeSet) : LinearLayout(c
         textView?.setOnClickListener(null)
         if (ivExpandOrShrink != null) {
             ivExpandOrShrink?.setOnClickListener(null)
-            ivExpandOrShrink?.visibility = View.GONE
+            ivExpandOrShrink?.visibility = GONE
         }
     }
 

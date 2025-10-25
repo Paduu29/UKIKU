@@ -3,7 +3,6 @@ package knf.kuma.custom
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
@@ -53,6 +52,6 @@ class SeenAnimeOverlay : LinearLayout {
     }
 
     private fun setState(seen: Boolean) {
-        post { visibility = if (seen) View.VISIBLE else View.GONE }
+        post { visibility = if (seen) VISIBLE else GONE }
     }
 }

@@ -23,7 +23,7 @@ class StateView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
             titleText = array.getString(R.styleable.StateView_sv_title) ?: titleText
             array.recycle()
         }
-        View.inflate(context, R.layout.layout_loading_text, this)
+        inflate(context, R.layout.layout_loading_text, this)
     }
 
     override fun onFinishInflate() {
@@ -34,7 +34,7 @@ class StateView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
     fun load(contentText: String, state: Int = STATE_NORMAL) {
         val shortAnimationDuration = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         doOnUIGlobal {
-            visibility = View.VISIBLE
+            visibility = VISIBLE
             val textView = find<TextView>(R.id.text)
             val loading = find<View>(R.id.loading)
             when (state) {
@@ -46,7 +46,7 @@ class StateView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
                 text = contentText
                 if (!isSetted) {
                     alpha = 0f
-                    visibility = View.VISIBLE
+                    visibility = VISIBLE
                     animate()
                             .alpha(1f)
                             .setDuration(shortAnimationDuration)
@@ -59,7 +59,7 @@ class StateView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
                         .setDuration(shortAnimationDuration)
                         .setListener(object : AnimatorListenerAdapter() {
                             override fun onAnimationEnd(animation: Animator) {
-                                loading.visibility = View.GONE
+                                loading.visibility = GONE
                             }
                         })
             isSetted = true

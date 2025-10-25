@@ -16,7 +16,7 @@ import org.jetbrains.anko.doAsync
 import java.io.File
 import java.io.OutputStream
 import java.lang.reflect.Array
-import java.util.*
+import java.util.Locale
 
 object FileUtil {
 
@@ -155,7 +155,7 @@ object FileUtil {
     fun moveFile(resolver: ContentResolver, uri: Uri?, outputStream: OutputStream?, delete: Boolean = true): LiveData<Pair<Int, Boolean>> {
         val liveData = MutableLiveData<Pair<Int, Boolean>>()
         if (uri == null || outputStream == null) {
-            doOnUIGlobal { liveData.setValue(Pair(-1, true)) }
+            doOnUIGlobal { liveData.value = Pair(-1, true) }
             return liveData
         }
         doAsync {
@@ -169,7 +169,7 @@ object FileUtil {
                     outputStream.write(buffer, 0, read)
                     current += read.toLong()
                     val prog = (current * 100 / total).toInt()
-                    doOnUIGlobal { liveData.setValue(Pair(prog, false)) }
+                    doOnUIGlobal { liveData.value = Pair(prog, false) }
                     read = inputStream?.read(buffer) ?: 0
                 }
                 inputStream?.close()
@@ -182,11 +182,11 @@ object FileUtil {
                     e.printStackTrace()
                 }
 
-                doOnUIGlobal { liveData.setValue(Pair(100, true)) }
+                doOnUIGlobal { liveData.value = Pair(100, true) }
             } catch (e: Exception) {
                 e.printStackTrace()
                 FirebaseCrashlytics.getInstance().recordException(e)
-                doOnUIGlobal { liveData.setValue(Pair(-1, true)) }
+                doOnUIGlobal { liveData.value = Pair(-1, true) }
             }
         }
         return liveData
@@ -210,13 +210,13 @@ object FileUtil {
                         outputStream?.write(buffer, 0, read)
                         current += read.toLong()
                         val prog = (current * 100 / total).toInt()
-                        doOnUIGlobal { liveData.setValue(Pair(Pair(String.format(Locale.US, ps, g_count, gTotal), prog), false)) }
+                        doOnUIGlobal { liveData.value = Pair(Pair(String.format(Locale.US, ps, g_count, gTotal), prog), false) }
                         read = inputStream?.read(buffer) ?: 0
                     }
                     inputStream?.close()
                     outputStream?.flush()
                     outputStream?.close()
-                    doOnUIGlobal { liveData.setValue(Pair(Pair(String.format(Locale.US, ps, g_count, gTotal), 100), false)) }
+                    doOnUIGlobal { liveData.value = Pair(Pair(String.format(Locale.US, ps, g_count, gTotal), 100), false) }
                     try {
                         DocumentsContract.deleteDocument(resolver, pair.first)
                     } catch (e: Exception) {
@@ -231,7 +231,7 @@ object FileUtil {
 
             }
             val finalSuccess = success
-            doOnUIGlobal { liveData.setValue(Pair(Pair(String.format(Locale.US, ps, gTotal, gTotal), finalSuccess), true)) }
+            doOnUIGlobal { liveData.value = Pair(Pair(String.format(Locale.US, ps, gTotal, gTotal), finalSuccess), true) }
         }
         return liveData
     }

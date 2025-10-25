@@ -1,6 +1,5 @@
 package knf.kuma.tv.details
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -39,7 +38,7 @@ class TVAnimesDetails : TVBaseActivity(), TVServersFactory.ServersInterface {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             val bundle = data?.extras
             if (requestCode == TVServersFactory.REQUEST_CODE_MULTI)
                 serversFactory?.analyzeMulti(bundle?.getInt(keyPosition, 0) ?: 0)
@@ -49,7 +48,7 @@ class TVAnimesDetails : TVBaseActivity(), TVServersFactory.ServersInterface {
                 else
                     serversFactory?.analyzeServer(bundle?.getInt(keyPosition, 0) ?: 0)
             }
-        } else if (resultCode == Activity.RESULT_CANCELED && data?.extras?.getBoolean(keyIsVideoServer, false) == true)
+        } else if (resultCode == RESULT_CANCELED && data?.extras?.getBoolean(keyIsVideoServer, false) == true)
             serversFactory?.showServerList()
     }
 

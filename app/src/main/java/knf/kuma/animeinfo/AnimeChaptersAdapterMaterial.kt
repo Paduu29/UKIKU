@@ -50,7 +50,7 @@ import knf.kuma.commons.noCrash
 import knf.kuma.commons.noCrashSuspend
 import knf.kuma.commons.safeShow
 import knf.kuma.database.CacheDB
-import knf.kuma.download.DownloadManager
+import knf.kuma.download.DownloadManagerCentral
 import knf.kuma.download.FileAccessHelper
 import knf.kuma.pojos.DownloadObject
 import knf.kuma.pojos.RecordObject
@@ -253,7 +253,7 @@ class AnimeChaptersAdapterMaterial(private val fragment: Fragment, private val r
                                         chapter.chapter.fileWrapper().exist = false
                                         holder.setDownloaded(false, false)
                                     }
-                                    DownloadManager.cancel(chapter.chapter.eid)
+                                    DownloadManagerCentral.cancel(chapter.chapter.eid)
                                     QueueManager.remove(chapter.chapter.eid)
                                 }
                                 negativeButton(text = "CANCELAR")

@@ -17,10 +17,10 @@ import knf.kuma.commons.PrefsUtil
 import knf.kuma.commons.doOnUI
 import knf.kuma.commons.safeShow
 import knf.kuma.database.CacheDB
-import knf.kuma.download.DownloadManager
+import knf.kuma.download.DownloadManagerCentral
 import knf.kuma.pojos.DownloadObject
 import org.jetbrains.anko.find
-import java.util.*
+import java.util.Locale
 
 class DownloadingAdapter internal constructor(private val fragment: Fragment, private val downloadObjects: MutableList<DownloadObject>) : RecyclerView.Adapter<DownloadingAdapter.DownloadingItem>() {
     private val downloadsDAO = CacheDB.INSTANCE.downloadsDAO()
@@ -54,11 +54,11 @@ class DownloadingAdapter internal constructor(private val fragment: Fragment, pr
             if (downloadObject.state == DownloadObject.DOWNLOADING) {
                 downloadObject.state = DownloadObject.PAUSED
                 holder.action.text = "REANUDAR"
-                DownloadManager.pause(downloadObject)
+                DownloadManagerCentral.pause(downloadObject)
             } else if (downloadObject.state == DownloadObject.PAUSED) {
                 downloadObject.state = DownloadObject.PENDING
                 holder.action.text = "PAUSAR"
-                DownloadManager.resume(downloadObject)
+                DownloadManagerCentral.resume(downloadObject)
             }
         }
         holder.cancel.setOnClickListener {
@@ -69,7 +69,7 @@ class DownloadingAdapter internal constructor(private val fragment: Fragment, pr
                         try {
                             downloadObjects.removeAt(holder.adapterPosition)
                             notifyItemRemoved(holder.adapterPosition)
-                            DownloadManager.cancel(downloadObject.eid)
+                            DownloadManagerCentral.cancel(downloadObject.eid)
                         } catch (e: Exception) {
                             //
                         }

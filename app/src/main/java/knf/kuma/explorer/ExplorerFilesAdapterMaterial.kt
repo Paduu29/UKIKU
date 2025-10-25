@@ -11,11 +11,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import knf.kuma.R
 import knf.kuma.animeinfo.ActivityAnimeMaterial
-import knf.kuma.commons.PicassoSingle
 import knf.kuma.commons.PrefsUtil
 import knf.kuma.commons.bind
+import knf.kuma.commons.load
 import knf.kuma.pojos.ExplorerObject
-import java.util.*
+import java.util.Locale
 
 class ExplorerFilesAdapterMaterial internal constructor(private val fragment: Fragment, private var listener: FragmentFilesMaterial.SelectedListener?) : ListAdapter<ExplorerObject,ExplorerFilesAdapterMaterial.FileItem>(ExplorerObjectDiff()) {
 
@@ -37,7 +37,7 @@ class ExplorerFilesAdapterMaterial internal constructor(private val fragment: Fr
 
     override fun onBindViewHolder(holder: FileItem, position: Int) {
         val explorerObject = getItem(position)
-        PicassoSingle.get().load(explorerObject.img).into(holder.imageView)
+        holder.imageView.load(explorerObject.img)
         holder.title.text = explorerObject.name
         holder.chapter.text = String.format(Locale.getDefault(), if (explorerObject.count == 1) "%d archivo" else "%d archivos", explorerObject.count)
         holder.cardView.setOnClickListener { listener?.onSelected(explorerObject) }

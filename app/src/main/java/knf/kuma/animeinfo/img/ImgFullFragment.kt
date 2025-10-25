@@ -2,7 +2,6 @@ package knf.kuma.animeinfo.img
 
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -11,11 +10,14 @@ import android.view.View
 import android.widget.ProgressBar
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
-import com.squareup.picasso.Callback
 import knf.kuma.R
 import knf.kuma.commons.createSnackbar
-import knf.kuma.commons.load
 import knf.kuma.commons.safeDismiss
 import knf.kuma.commons.showSnackbar
 import knf.kuma.databinding.LayoutImgBigBinding
@@ -32,18 +34,30 @@ class ImgFullFragment : Fragment(R.layout.layout_img_big), PopupMenu.OnMenuItemC
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = LayoutImgBigBinding.bind(view)
-        binding.img.load(arguments?.getString("img"), object : Callback {
-            override fun onSuccess() {
-                bitmap = (binding.img.drawable as? BitmapDrawable)?.bitmap
-                if (bitmap == null) {
+        Glide.with(this).asBitmap().load(arguments?.getString("img")).listener(
+            object : RequestListener<Bitmap> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Bitmap?>,
+                    isFirstResource: Boolean
+                ): Boolean {
                     binding.error.visibility = View.VISIBLE
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    model: Any,
+                    target: Target<Bitmap?>?,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    bitmap = resource
+                    return false
                 }
             }
-
-            override fun onError(e: java.lang.Exception?) {
-                binding.error.visibility = View.VISIBLE
-            }
-        })
+        ).into(binding.img)
         binding.img.setOnLongClickListener {
             if (bitmap != null) {
                 context?.let {

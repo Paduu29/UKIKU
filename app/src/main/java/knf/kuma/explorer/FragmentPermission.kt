@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import knf.kuma.R
+import knf.kuma.commons.isMIUI
 import knf.kuma.download.FileAccessHelper
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.find
@@ -50,13 +51,19 @@ class FragmentPermission : Fragment() {
                             Build.VERSION.SDK_INT < Build.VERSION_CODES.Q -> {
                                 permissionContract.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                             }
-
                             else -> {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                                    Toaster.toastLong("Por favor selecciona un directorio para las descargas")
-                                else
-                                    Toaster.toastLong("Por favor selecciona la raiz del almacenamiento")
-                                treeChooser.launch(null)
+                                try {
+                                    treeChooser.launch(null)
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                                        Toaster.toastLong("Por favor selecciona un directorio para las descargas")
+                                    else
+                                        Toaster.toastLong("Por favor selecciona la raiz del almacenamiento")
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                    if (isMIUI) {
+                                        permissionContract.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    }
+                                }
                             }
                         }
                     }
