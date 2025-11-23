@@ -9,7 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import knf.kuma.R
 import knf.kuma.animeinfo.ActivityAnime
 import knf.kuma.backup.firestore.syncData
-import knf.kuma.commons.*
+import knf.kuma.commons.bind
+import knf.kuma.commons.doOnUI
+import knf.kuma.commons.inflate
+import knf.kuma.commons.load
+import knf.kuma.commons.optionalBind
+import knf.kuma.commons.transform
 import knf.kuma.custom.SeenAnimeOverlay
 import knf.kuma.database.CacheDB
 import knf.kuma.pojos.RecentObject
@@ -38,6 +43,7 @@ class RecentsAdapter(val fragment: HomeFragment, private val isLarge: Boolean = 
     override fun getItemCount(): Int = list.size
 
     override fun onBindViewHolder(holder: RecentViewHolder, position: Int) {
+        if (list.isEmpty()) return
         val item = list[position]
         holder.img.load(item.img)
         holder.title.text = item.name

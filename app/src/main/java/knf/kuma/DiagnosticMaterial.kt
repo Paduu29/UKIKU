@@ -184,7 +184,7 @@ class DiagnosticMaterial : GenericActivity() {
                 }
             }
             loadBypassInfo()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             e.printStackTrace()
             binding.bypassState.load("Error en página: ${e.message}", StateView.STATE_ERROR)
         }

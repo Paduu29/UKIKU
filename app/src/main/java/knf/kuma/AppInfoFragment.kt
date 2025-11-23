@@ -98,7 +98,7 @@ class AppInfoFragment: MaterialAboutFragment() {
                 getDrawable(requireContext(), R.drawable.ic_author),
                 "Jordy Mendoza",
                 true,
-                Uri.parse("https://t.me/UnbarredStream")
+                Uri.parse("https://t.me/unbarred_stream")
             )
         )
         val donateCard = MaterialAboutCard.Builder()
@@ -172,24 +172,6 @@ class AppInfoFragment: MaterialAboutFragment() {
         extraCard.addItem(
             ConvenienceBuilder.createWebsiteActionItem(
                 requireContext(),
-                getDrawable(requireContext(), R.drawable.ic_facebook),
-                "Facebook",
-                true,
-                Uri.parse("https://www.facebook.com/ukikuapp")
-            )
-        )
-        extraCard.addItem(
-            ConvenienceBuilder.createWebsiteActionItem(
-                requireContext(),
-                getDrawable(requireContext(), R.drawable.ic_facebook_group),
-                "Grupo de Facebook",
-                true,
-                Uri.parse("https://www.facebook.com/groups/ukikugroup")
-            )
-        )
-        extraCard.addItem(
-            ConvenienceBuilder.createWebsiteActionItem(
-                requireContext(),
                 getDrawable(requireContext(), R.drawable.ic_discord),
                 "Discord",
                 false,
@@ -202,7 +184,7 @@ class AppInfoFragment: MaterialAboutFragment() {
                 getDrawable(requireContext(), R.drawable.ic_beta),
                 "Grupo Beta",
                 false,
-                Uri.parse("https://t.me/ukiku_beta")
+                Uri.parse("https://t.me/ukiku_group")
             )
         )
         extraCard.addItem(

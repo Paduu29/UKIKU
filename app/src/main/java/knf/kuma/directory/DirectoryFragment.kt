@@ -21,7 +21,7 @@ import knf.kuma.directory.viewholders.DirMainFragmentHolder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.jetbrains.anko.support.v4.find
+import org.jetbrains.anko.support.v4.findOptional
 
 class DirectoryFragment : BottomFragment() {
     private var fragmentHolder: DirMainFragmentHolder? = null
@@ -62,7 +62,7 @@ class DirectoryFragment : BottomFragment() {
         if (PrefsUtil.isDirectoryFinished)
             lifecycleScope.launch(Dispatchers.IO) {
                 delay(1000)
-                find<BannerContainerView>(R.id.adContainer).implBanner(AdsType.DIRECTORY_BANNER, true)
+                findOptional<BannerContainerView>(R.id.adContainer)?.implBanner(AdsType.DIRECTORY_BANNER, true)
             }
     }
 

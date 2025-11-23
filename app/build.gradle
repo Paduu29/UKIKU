@@ -13,8 +13,8 @@ android {
         applicationId "knf.kuma"
         minSdkVersion 24
         targetSdkVersion 36
-        versionCode 224
-        versionName "5.3.14"
+        versionCode 225
+        versionName "5.3.15"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
@@ -237,6 +237,13 @@ dependencies {
     implementation 'org.jetbrains.anko:anko:0.10.8'
     implementation 'org.jetbrains.anko:anko-coroutines:0.10.8'
     //------
+    //Moon
+    //implementation 'io.github.darkryh.moongetter:moongetter-core:2.0.0-alpha02'
+    //implementation 'io.github.darkryh.moongetter:moongetter-client-okhttp:2.0.0-alpha02'
+    //implementation 'io.github.darkryh.moongetter:moongetter-client-cookie-java-net:2.0.0-alpha02'
+    //implementation 'io.github.darkryh.moongetter:moongetter-client-trustmanager-java-net:2.0.0-alpha02'
+    //implementation 'io.github.darkryh.moongetter:moongetter-android-robot:2.0.0-alpha02'
+    //
     //Applovin
     implementation 'com.applovin:applovin-sdk:+'
     implementation 'com.applovin.mediation:inmobi-adapter:+'
