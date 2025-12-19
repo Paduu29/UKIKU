@@ -71,7 +71,11 @@ class DownloadManagerJob : JobService() {
     }
 
     override fun onStopJob(params: JobParameters?): Boolean {
-        unregisterReceiver(stopReceiver)
+        try {
+            unregisterReceiver(stopReceiver)
+        } catch (e: Exception) {
+            //
+        }
         return true
     }
 

@@ -28,10 +28,15 @@ object Unpacker {
         return jsBridge.evaluateBlocking("function prnt() {var txt = $packedCode; return txt;}prnt();")
     }
 
-    suspend fun unpackWeb(context: Context, link: String): String {
-        val html = getHtml(context, link) ?: return ""
-        val packedCode = packedRegex2.find(html)?.destructured?.component1()
-        if (packedCode == null) return html
+    suspend fun unpackWeb(context: Context, link: String): UnpackResult {
+        val html = getHtml(context, link)
+        val packedCode = packedRegex2.find(html.html)?.destructured?.component1() ?: return UnpackResult(html.url, html.html)
+        val jsBridge = JsBridge(JsBridgeConfig.bareConfig(), safeContext)
+        return UnpackResult(html.url, jsBridge.evaluateBlocking("function prnt() {var txt = $packedCode; return txt;}prnt();"))
+    }
+
+    fun unpackHtml(html: String): String {
+        val packedCode = packedRegex2.find(html)?.destructured?.component1() ?: return html
         val jsBridge = JsBridge(JsBridgeConfig.bareConfig(), safeContext)
         return jsBridge.evaluateBlocking("function prnt() {var txt = $packedCode; return txt;}prnt();")
     }
@@ -47,7 +52,7 @@ object Unpacker {
         }
     }
 
-    suspend fun getHtml(context: Context, link: String, delay: Long = 5000): String? {
+    suspend fun getHtml(context: Context, link: String, delay: Long = 5000): HTMLResult {
         return withContext(Dispatchers.Main) {
             val evaluator = WebJS(context)
             suspendCoroutine { continuation ->
@@ -55,8 +60,8 @@ object Unpacker {
                     link,
                     "(\"<html>\"+document.getElementsByTagName(\"html\")[0].innerHTML+\"<\\/html>\")",
                     delay
-                ) {
-                    continuation.resume(it)
+                ) { url, html ->
+                    continuation.resume(HTMLResult(url, html))
                 }
             }
         }
@@ -76,5 +81,15 @@ object Unpacker {
             }
         }
     }
+
+    data class HTMLResult(
+        val url: String?,
+        val html: String
+    )
+
+    data class UnpackResult(
+        val url: String?,
+        val unpacked: String
+    )
 
 }

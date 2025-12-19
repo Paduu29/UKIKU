@@ -2,11 +2,13 @@ package knf.kuma.updater
 
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.thin.downloadmanager.DefaultRetryPolicy
 import com.thin.downloadmanager.DownloadRequest
 import com.thin.downloadmanager.DownloadStatusListenerV1
 import com.thin.downloadmanager.ThinDownloadManager
@@ -23,9 +25,11 @@ class UpdaterViewModel : ViewModel() {
     fun start(file: File, link: String): LiveData<Pair<UpdaterType, Any?>> {
         if (isStarted) return liveData
         isStarted = true
-        manager.add(DownloadRequest(Uri.parse(link))
+        manager.add(
+            DownloadRequest(link.toUri())
                 .setDestinationURI(Uri.fromFile(file))
                 .setDownloadResumable(false)
+                .setRetryPolicy(DefaultRetryPolicy(5000, 3, 1f))
                 .setStatusListener(object : DownloadStatusListenerV1 {
                     override fun onDownloadComplete(downloadRequest: DownloadRequest?) {
                         viewModelScope.launch(Dispatchers.Main) {

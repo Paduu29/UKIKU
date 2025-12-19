@@ -1,9 +1,7 @@
 package knf.kuma.videoservers
 
 import android.content.Context
-import android.util.Log
 import knf.kuma.commons.PatternUtil
-import knf.kuma.commons.urlFixed
 import knf.kuma.videoservers.VideoServer.Names.STAPE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -23,7 +21,7 @@ class StapeServer(context: Context, baseLink: String) : Server(context, baseLink
             val downLink = PatternUtil.extractLink(baseLink)
             return try {
                 val link = runBlocking {
-                    val html = withContext(Dispatchers.Main) { Unpacker.getHtml(context, downLink) }
+                    val html = withContext(Dispatchers.Main) { Unpacker.getHtml(context, downLink).html }
                     val doc = Jsoup.parse(html, "https://streamtape.com")
                     doc.select("video[id]").attr("abs:src")
                 }

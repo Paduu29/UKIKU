@@ -35,6 +35,10 @@ class UpdateActivity : GenericActivity() {
         setContentView(binding.root)
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
         binding.download.setOnClickListener { install() }
+        binding.retry.setOnClickListener {
+            prepareForStart()
+            start()
+        }
         binding.progress.max = 100
         val animationDrawable = binding.relBack.background as AnimationDrawable
         if (!animationDrawable.isRunning) {
@@ -42,27 +46,34 @@ class UpdateActivity : GenericActivity() {
             animationDrawable.setExitFadeDuration(2500)
             animationDrawable.start()
         }
-        updaterViewModel.start(update, "https://github.com/jordyamc/UKIKU/raw/master/app/$getUpdateDir/app-$getUpdateDir.apk")
-                .observe(this, Observer {
-                    when (it.first) {
-                        UpdaterType.TYPE_IDLE -> {
-                            binding.progress.isIndeterminate = true
-                        }
-                        UpdaterType.TYPE_PROGRESS -> {
-                            setDownProgress(it.second as Int)
-                        }
-                        UpdaterType.TYPE_ERROR -> {
-                            finish()
-                        }
+        start()
+    }
 
-                        UpdaterType.TYPE_COMPLETED -> {
-                            isUpdateDownloaded = true
-                            binding.progress.progress = 100
-                            binding.progressText.text = "100%"
-                            prepareForInstall()
-                        }
+    private fun start() {
+        updaterViewModel.start(update, "https://github.com/jordyamc/UKIKU/raw/master/app/$getUpdateDir/app-$getUpdateDir.apk")
+            .observe(this, Observer {
+                when (it.first) {
+                    UpdaterType.TYPE_IDLE -> {
+                        binding.progress.isIndeterminate = true
                     }
-                })
+
+                    UpdaterType.TYPE_PROGRESS -> {
+                        setDownProgress(it.second as Int)
+                    }
+
+                    UpdaterType.TYPE_ERROR -> {
+                        prepareForRetry()
+                        onShowAlternativeDownload()
+                    }
+
+                    UpdaterType.TYPE_COMPLETED -> {
+                        isUpdateDownloaded = true
+                        binding.progress.progress = 100
+                        binding.progressText.text = "100%"
+                        prepareForInstall()
+                    }
+                }
+            })
     }
 
     override fun onStart() {
@@ -123,16 +134,61 @@ class UpdateActivity : GenericActivity() {
         }
     }
 
+    private fun prepareForStart() {
+        setDownProgress(100)
+        val fadein = AnimationUtils.loadAnimation(this, R.anim.fadein)
+        fadein.duration = 1000
+        val fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout)
+        fadeout.duration = 1000
+        binding.retry.post {
+            with(binding.retry) {
+                visibility = View.INVISIBLE
+                startAnimation(fadeout)
+            }
+        }
+        binding.progressText.post {
+            with(binding.progressText) {
+                visibility = View.VISIBLE
+                startAnimation(fadein)
+            }
+        }
+    }
+
+    private fun prepareForRetry() {
+        setDownProgress(100)
+        val fadein = AnimationUtils.loadAnimation(this, R.anim.fadein)
+        fadein.duration = 1000
+        val fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout)
+        fadeout.duration = 1000
+        binding.progressText.post {
+            with(binding.progressText) {
+                visibility = View.INVISIBLE
+                startAnimation(fadeout)
+            }
+        }
+        binding.retry.post {
+            with(binding.retry) {
+                visibility = View.VISIBLE
+                startAnimation(fadein)
+            }
+        }
+    }
+
+    private fun onShowAlternativeDownload() {
+        MaterialDialog(this).safeShow {
+            title(text = "¿Error al actualizar?")
+            message(text = "Puedes descargar la actualizacion desde la pagina web oficial!")
+            positiveButton(text = "Descargar") {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://ukiku.app")))
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
-        if (isUpdateDownloaded)
-            MaterialDialog(this).safeShow {
-                title(text = "¿Error al actualizar?")
-                message(text = "Puedes descargar la actualizacion desde la pagina web oficial!")
-                positiveButton(text = "Descargar") {
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://ukiku.app")))
-                }
-            }
+        if (isUpdateDownloaded) {
+            onShowAlternativeDownload()
+        }
     }
 
     override fun onBackPressed() {

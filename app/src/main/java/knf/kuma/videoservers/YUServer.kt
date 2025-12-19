@@ -21,7 +21,7 @@ class YUServer(context: Context, baseLink: String) : Server(context, baseLink) {
         get() {
             val yuLink = PatternUtil.extractLink(baseLink)
             try {
-                val videoLink = PatternUtil.getYUvideoLink(runBlocking(Dispatchers.Main) { Unpacker.getHtml(context, yuLink, 8000)!! })
+                val videoLink = PatternUtil.getYUvideoLink(runBlocking(Dispatchers.Main) { Unpacker.getHtml(context, yuLink, 8000).html })
                 val client = OkHttpClient().newBuilder()
                         .connectionSpecs(listOf(ConnectionSpec.CLEARTEXT, ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
                                 .allEnabledTlsVersions()

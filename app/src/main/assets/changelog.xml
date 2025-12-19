@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release code="227" version="5.3.17">
+        <change type="fix">Corrección servidor StreamWish</change>
+    </release>
+    <release code="226" version="5.3.16">
+        <change type="change">Prevenir error al descargar actualización</change>
+    </release>
     <release code="225" version="5.3.15">
         <change type="change">Enlaces de telegram actualizados</change>
     </release>

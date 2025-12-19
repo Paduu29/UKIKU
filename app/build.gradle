@@ -13,8 +13,8 @@ android {
         applicationId "knf.kuma"
         minSdkVersion 24
         targetSdkVersion 36
-        versionCode 225
-        versionName "5.3.15"
+        versionCode 227
+        versionName "5.3.17"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {

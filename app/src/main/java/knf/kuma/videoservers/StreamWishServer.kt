@@ -3,7 +3,7 @@ package knf.kuma.videoservers
 import android.content.Context
 import android.net.Uri
 import knf.kuma.commons.PatternUtil
-import knf.kuma.commons.resolveRedirection
+import knf.kuma.commons.jsoupCookies
 import knf.kuma.videoservers.VideoServer.Names.STREAMWISH
 import kotlinx.coroutines.runBlocking
 
@@ -25,14 +25,23 @@ class StreamWishServer internal constructor(context: Context, baseLink: String) 
         get() {
             return try {
                 val downLink = PatternUtil.extractLink(baseLink)
-                val fLink = downLink.resolveRedirection()
-                val host = Uri.parse(fLink).let { it.scheme + "://" + it.host }
-                val unpack = runBlocking { Unpacker.unpackWeb(context, fLink) }
-                val options = "hls\\d\": ?\"([^\"]*)".toRegex().findAll(unpack).toList().reversed().mapIndexed { index, it ->
-                    val (link) = it.destructured
-                    Option(name, "HLS${index + 1}", if (link.startsWith("http")) link else host + link)
-                }.toMutableList()
-                VideoServer(name, options)
+                for (i in 0..3) {
+                    val unpack = runBlocking { Unpacker.unpackWeb(context, downLink) }
+                    val host = Uri.parse(unpack.url).let { it.scheme + "://" + it.host }
+                    val options = "hls\\d\": ?\"([^\"]*)".toRegex().findAll(unpack.unpacked).toList().reversed().mapIndexed { index, it ->
+                        val (link) = it.destructured
+                        Option(name, "HLS${index + 1}", if (link.startsWith("http")) link else host + link)
+                    }.toMutableList()
+                    val selected = options.firstOrNull {
+                        jsoupCookies(it.url)
+                            .ignoreContentType(true)
+                            .ignoreHttpErrors(true)
+                            .execute().statusCode() in (200..299)
+                    }
+                    if (selected == null) continue
+                    return VideoServer(name, selected)
+                }
+                null
             } catch (e: Exception) {
                 e.printStackTrace()
                 null

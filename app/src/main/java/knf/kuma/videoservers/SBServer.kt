@@ -33,7 +33,7 @@ class SBServer internal constructor(context: Context, baseLink: String) :
                     "${downLink.substringBeforeLast("/")}/dl?op=download_orig&id=$videoId&mode=$type&hash=$hash"
                 val tryCode = {
                     val downCode =
-                        runBlocking(Dispatchers.Main) { Unpacker.getHtml(context, downloadLink) }
+                        runBlocking(Dispatchers.Main) { Unpacker.getHtml(context, downloadLink).html }
                     val downDoc = Jsoup.parse(downCode)
                     val fLink = downDoc.select("a:contains(Download Link)").attr("href")
                     check(fLink.isNotBlank())

@@ -13,22 +13,24 @@ import java.util.regex.Pattern
 
 class WebJS(context: Context) {
     private val webView = WebView(context)
-    private var callback: ((String) -> Unit)? = null
+    private var currentUrl: String? = null
+    private var callback: ((String?, String) -> Unit)? = null
 
     init {
         webView.settings.apply {
             javaScriptEnabled = true
         }
-        webView.addJavascriptInterface(JSInterface { callback?.invoke(it) }, "myInterface")
+        webView.addJavascriptInterface(JSInterface { callback?.invoke(currentUrl, it) }, "myInterface")
     }
 
-    fun evalOnFinish(link: String, js: String, delay: Long = 5000, callback: (String) -> Unit) {
+    fun evalOnFinish(link: String, js: String, delay: Long = 5000, callback: (String?, String) -> Unit) {
         this.callback = callback
         var response = false
         val handler = Handler(Looper.getMainLooper())
         val run = Runnable {
             if (!response) {
                 response = true
+                currentUrl = webView.url
                 webView.loadUrl("javascript:myInterface.returnResult(eval('try{$js}catch(e){e}'));")
             }
         }

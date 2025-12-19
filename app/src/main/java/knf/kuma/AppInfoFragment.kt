@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.core.net.toUri
 import com.afollestad.materialdialogs.MaterialDialog
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder
 import com.danielstone.materialaboutlibrary.MaterialAboutFragment
@@ -83,7 +84,7 @@ class AppInfoFragment: MaterialAboutFragment() {
                 MaterialDialog(requireContext()).safeShow {
                     message(text = "Con la suscripción podrás usar el backup por Firestore sin activar los anuncios!")
                     positiveButton(text = "Suscribirse") {
-                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=knf.kuma.key")))
+                        startActivity(Intent(Intent.ACTION_VIEW, "https://play.google.com/store/apps/details?id=knf.kuma.key".toUri()))
                     }
                     negativeButton(text = "cancelar")
                 }
@@ -98,7 +99,7 @@ class AppInfoFragment: MaterialAboutFragment() {
                 getDrawable(requireContext(), R.drawable.ic_author),
                 "Jordy Mendoza",
                 true,
-                Uri.parse("https://t.me/unbarred_stream")
+                "https://t.me/unbarred_stream".toUri()
             )
         )
         val donateCard = MaterialAboutCard.Builder()
@@ -111,7 +112,7 @@ class AppInfoFragment: MaterialAboutFragment() {
                     getDrawable(requireContext(), R.drawable.ic_paypal),
                     "Paypal",
                     false,
-                    Uri.parse("https://www.paypal.com/donate/?hosted_button_id=AFBFBHD8F4Z5C")
+                    "https://www.paypal.com/donate/?hosted_button_id=9WXSCG3AP639J".toUri()
                 )
             )
             donateCard.addItem(
@@ -120,7 +121,7 @@ class AppInfoFragment: MaterialAboutFragment() {
                     getDrawable(requireContext(), R.drawable.ic_patreon),
                     "Patreon",
                     false,
-                    Uri.parse("https://www.patreon.com/animeflvapp")
+                    "https://www.patreon.com/animeflvapp".toUri()
                 )
             )
             donateCard.addItem(
@@ -129,7 +130,7 @@ class AppInfoFragment: MaterialAboutFragment() {
                     getDrawable(requireContext(), R.drawable.ic_cuplogo),
                     "Ko-fi",
                     false,
-                    Uri.parse("https://ko-fi.com/unbarredstream")
+                    "https://ko-fi.com/unbarredstream".toUri()
                 )
             )
             donateCard.addItem(
@@ -157,7 +158,7 @@ class AppInfoFragment: MaterialAboutFragment() {
                 getDrawable(requireContext(), R.drawable.ic_web),
                 "Politica de privacidad",
                 true,
-                Uri.parse("https://ukiku.app/policy.html")
+                "https://ukiku.app/policy.html".toUri()
             )
         )
         extraCard.addItem(
@@ -166,7 +167,7 @@ class AppInfoFragment: MaterialAboutFragment() {
                 getDrawable(requireContext(), R.drawable.ic_github),
                 "Proyecto en github",
                 true,
-                Uri.parse("https://github.com/jordyamc/UKIKU")
+                "https://github.com/jordyamc/UKIKU".toUri()
             )
         )
         extraCard.addItem(
@@ -175,7 +176,7 @@ class AppInfoFragment: MaterialAboutFragment() {
                 getDrawable(requireContext(), R.drawable.ic_discord),
                 "Discord",
                 false,
-                Uri.parse("https://discord.gg/6hzpua6")
+                "https://discord.gg/6hzpua6".toUri()
             )
         )
         extraCard.addItem(
@@ -184,7 +185,7 @@ class AppInfoFragment: MaterialAboutFragment() {
                 getDrawable(requireContext(), R.drawable.ic_beta),
                 "Grupo Beta",
                 false,
-                Uri.parse("https://t.me/ukiku_group")
+                "https://t.me/ukiku_group".toUri()
             )
         )
         extraCard.addItem(
